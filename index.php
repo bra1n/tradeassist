@@ -4,16 +4,16 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<title>Magic Trade Assist</title>
-        <link rel="stylesheet" type="text/css" href="styles/tradeassist.css"/>
-        <script src="scripts/jquery.js" type="text/javascript"></script>
-        <script src="scripts/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
-        <script src="scripts/tradeassist.js" type="text/javascript"></script>
-        <script src="scripts/tradeassist.cardinterface.js" type="text/javascript"></script>
-        <script src="scripts/tradeassist.cardlist.js" type="text/javascript"></script>
-        <script src="scripts/tradeassist.suggestions.js" type="text/javascript"></script>
-        <script src="scripts/tradeassist.valuecounter.js" type="text/javascript"></script>
-        <script src="scripts/tradeassist.card.js" type="text/javascript"></script>
-		<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/>
+        <link rel="stylesheet" type="text/css" href="/styles/tradeassist.css"/>
+        <script src="/scripts/jquery.js" type="text/javascript"></script>
+        <script src="/scripts/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
+        <script src="/scripts/tradeassist.js" type="text/javascript"></script>
+        <script src="/scripts/tradeassist.cardinterface.js" type="text/javascript"></script>
+        <script src="/scripts/tradeassist.cardlist.js" type="text/javascript"></script>
+        <script src="/scripts/tradeassist.suggestions.js" type="text/javascript"></script>
+        <script src="/scripts/tradeassist.valuecounter.js" type="text/javascript"></script>
+        <script src="/scripts/tradeassist.card.js" type="text/javascript"></script>
+		<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"/>
 	</head>
 	<body>
 		<div id="container">
