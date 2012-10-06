@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<title>Beta</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript" src="jquery.webcam.js"></script>
+	</head>
+	<body>
+		Kamera:<br/>
+		<div id="camera" style="float:left"></div>
+		<script type="text/javascript">
+			$("#camera").webcam({
+				width: 640,
+				height: 480,
+				mode: "save",
+				swffile: "jscam.swf",
+				onCapture: function () {
+					console.log('capture');
+					webcam.save('upload.php');
+				},
+				onSave: function() {
+					console.log('saved');
+					$('#result').attr('src','upload.jpg?'+new Date().getMilliseconds());
+				},
+				debug: function (type, string) {
+					console.log(type,string);
+				}
+			});	
+		</script>
+		<img id="result" src="upload.jpg"/><br/>
+		<a href="javascript:webcam.capture();" style="clear:left">Capture</a>
+	</body>
+</html>

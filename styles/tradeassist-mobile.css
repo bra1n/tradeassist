@@ -1,0 +1,251 @@
+html, body {
+	background: url("../images/background.jpg") repeat-x #464646;
+	height:100%;
+}
+
+#container { min-height:100%; padding: 0; }
+#wrapper { padding-bottom:40px; padding-top: 20px; }
+#main {
+	width:98%;
+	max-width:500px;
+	margin: auto;
+	border: 2px solid white;
+	position:relative;
+}
+
+#main .counter {
+	width:50%;
+	float:left;
+	text-align: center;
+	font-size: 2em;
+	color:#f08080;
+	cursor: pointer;
+	height:55px;
+	line-height: 55px;
+}
+
+
+
+#main .counter .card {
+	background: url("../images/card.gif") no-repeat right center;
+	padding: 2px 25px 2px 0;
+}
+#main .counter.loader {
+	background: url("../images/loader2.gif") no-repeat 10px 13px;
+}
+
+#main .counter.active {
+	font-weight: bold;
+	color: #adff2f;
+}
+
+#main .counter.show {
+	background-color:rgba(172,255,47,0.3);
+}
+
+#search-wrapper {
+	background: white;
+	clear: both;
+	height: 45px;
+	padding-top: 10px;
+}
+
+#search {
+	border: medium none;
+	display: block;
+	font-size: 2em;
+	height: 35px;
+	margin: auto;
+	padding: 0;
+	width: 96%;
+}
+
+.cardlist {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	width:100%;
+}
+
+.cardlist.left,
+.cardlist.right {
+	position:absolute;
+	display:none;
+	border: 2px solid black;
+	box-shadow: 0px 0px 5px #000000;
+	left: -2px;
+	top: 51px;
+	z-index: 15;
+	margin: 0;
+}
+
+.cardlist li {
+	background: #E3E3E3;
+	color: black;
+	font-size: 2em;
+	font-weight: bold;
+	height: 55px;
+	line-height: 55px;
+	padding-right: 30px;
+	position: relative;
+	cursor:pointer;
+	white-space: nowrap;
+}
+
+.cardlist li:nth-child(odd) { background: #d3d3d3; }
+.cardlist li:hover {	background: white; }
+
+.cardlist.left li,
+.cardlist.right li { background: #555555; color:#ffffff; }
+
+.cardlist.left li:nth-child(odd),
+.cardlist.right li:nth-child(odd) { background: #777777; color:#ffffff; }
+
+.cardlist li .thumb {
+	float: left;
+	height: 55px;
+	margin-right: 5px;
+	text-align: center;
+	width: 79px;
+	border-right: 2px solid white;
+	background-position: -10px -18px;
+	background-size: 100px auto;
+}
+
+.cardlist li .rate {
+	background-color: rgba(0, 0, 0, 0.4);
+	color: white;
+	font-size: 80%;
+	padding: 0 2px;
+	text-shadow: 0 0 5px black;
+}
+
+.cardlist li .cardname {
+	display:block;
+	overflow: hidden;
+	padding-left:5px;
+}
+
+.cardlist li.foil .cardname { 
+	color: #ffd700;
+	text-shadow:0 0 5px #000000; 
+}
+
+.cardlist li .editions {
+	background: white;
+	min-width: 75px;
+	position: absolute;
+	right: 5px;
+	text-align: center;
+	top: 3px;
+	white-space: normal;
+	z-index: 10;
+	border: 1px solid gray;
+	line-height: 49px;
+	border-radius:10px;
+	cursor:default;
+}
+
+.cardlist li .editions.multiple {
+	border-color:red;
+	cursor:pointer;
+}
+
+.cardlist li .edition {
+	background-image:none;
+	background-position:center center;
+	background-repeat:no-repeat;
+	height:36px;
+	margin: 0;
+	padding: 3px 5px 5px;
+	line-height:40px;
+	color:#aaa;
+	letter-spacing:-1px;
+}
+
+.cardlist li .edition.foil {
+	background:url("../images/glow.png") no-repeat center center;
+}
+
+
+.template {
+	display:none;
+}
+
+footer {
+	text-align: center;
+	height:40px;
+	line-height:40px;
+	margin-top:-40px;
+	position: relative;
+}
+
+@media only screen and (min-width: 800px) {
+	.cardlist.left, 
+	.cardlist.right {
+		display: block;
+		border: 2px solid white;
+		box-shadow: none;
+		top: -2px;
+		left: auto;
+		opacity: 0.5;
+	}
+	.cardlist.left {
+		left: -100%;
+		margin-left: -8px;
+	}
+	.cardlist.right {
+		margin-right: -8px;
+		right: -100%;
+	}
+	.cardlist.active { opacity:1; }
+	.cardlist.left li,
+	.cardlist.right li {
+		background: #E3E3E3;
+		color: #000000;
+	}
+	.cardlist.left li:nth-child(odd),
+	.cardlist.right li:nth-child(odd) {
+		background: #d3d3d3;
+		color: #000000;
+	}
+	#main {
+		width: 33%;
+	}
+
+}/*/mediaquery*/
+
+
+@media
+only screen and (-webkit-min-device-pixel-ratio: 1.5),
+only screen and (-o-min-device-pixel-ratio: 3/2),
+only screen and (min--moz-device-pixel-ratio: 1.5),
+only screen and (min-device-pixel-ratio: 1.5) {
+
+	.cardlist.left,
+	.cardlist.right {
+		display:none;
+		border: 2px solid black;
+		box-shadow: 0 0 5px #000000;
+		left: -2px;
+		top: 51px;
+		z-index: 15;
+		opacity:1;
+		margin: 0;
+	}
+
+	.cardlist.left li,
+	.cardlist.right li { background: #555555; color:#ffffff; }
+
+	.cardlist.left li:nth-child(odd),
+	.cardlist.right li:nth-child(odd) { background: #777777; color:#ffffff; }
+
+
+	#container { padding: 0; }
+	#main { width:98%; }
+
+	#main .counter.show {
+		background-color:rgba(172,255,47,0.3);
+	}
+}
+

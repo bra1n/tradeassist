@@ -1,0 +1,166 @@
+/* Layout */
+body { font-family:Tahoma, sans-serif; font-size:12px; margin:0; padding:0; background: url("../images/background.jpg") repeat-x #464646; }
+#content { position:absolute; width:100%; top:50%; margin-top:-100px; }
+#panel {
+	margin:auto;
+	width:625px;
+	border:3px solid black;
+	position:relative;
+	box-shadow:0 0 10px #000000;
+	padding: 5px;
+	border-radius: 10px;
+	background: #e5e5e5; /* Old browsers */
+	background: -moz-linear-gradient(top, #e5e5e5 0%, #ffffff 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e5e5e5), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e5e5', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* W3C */
+}
+#bottom { margin-top:5px; }
+#bottom > div { display:inline; }
+#foot { position:fixed; overflow:hidden; width:100%; bottom:0; left:0; text-align:center; }
+
+#cardpreview {
+	display:none;
+	position: absolute;
+	border: 3px solid black;
+	top: 0pt;
+	padding: 2px;
+	max-height: 87px;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 0pt 0pt 10px #000;
+	left: -80px;
+	background: #e5e5e5; /* Old browsers */
+	background: -moz-linear-gradient(top, #e5e5e5 0%, #ffffff 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e5e5e5), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5e5e5', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #e5e5e5 0%,#ffffff 100%); /* W3C */
+}
+#cardpreview img { max-width:65px; max-height:87px; }
+
+#languages {
+	background: none repeat scroll 0 0 white;
+    border: 2px solid black;
+    border-radius: 5px 5px 5px 5px;
+    line-height: 14px;
+    padding: 2px 4px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 56px;
+}
+#languages input { clip: rect(1px, 1px, 1px, 1px); position: absolute; }
+#languages label { width:16px; height:11px; display:inline-block; cursor:pointer; }
+#languages span { display: inline-block; text-align: center; width: 16px; }
+
+#cardname, #value { font-weight:bold; border: 2px solid black; border-radius: 5px; font-size: 24px; height: 30px; width: 355px; padding-left: 5px; background: #ffffff; }
+#value { width: 144px; padding-right: 5px; text-align: right; margin-left:20px; }
+
+#sell { position:absolute; right:12px; bottom:21px; }
+
+#overlay { position:absolute; z-index:10; left:50%; top:50%; border:3px solid black; background:white; padding:10px; display:none; border-radius: 10px; box-shadow: 0 0 10px #000; }
+#overlay-bg { position:absolute; z-index:5; width:100%; height:100%; left:0; top:0; background:black; opacity: 0.5; display:none; }
+
+input:disabled { color:gray; }
+
+/* Buttons */
+#bottom input[type=radio],#bottom input[type=checkbox] { clip: rect(1px, 1px, 1px, 1px); position: absolute; }
+#bottom label,#bottom button,#sell input {
+	display:inline-block;
+	cursor:pointer;
+	text-align: center;
+	padding: 3px 5px;
+	line-height:19px;
+	width:30px;
+	color:white;
+	font-weight:bold;
+	text-shadow: 0 0 5px #000;
+	border: 2px solid black;
+	margin-right: -6px;
+	vertical-align: middle;
+	background: #191919; /* Old browsers */
+	background: -moz-linear-gradient(top, #191919 0%, #4f4f4f 50%, #3a3a3a 51%, #000000 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#191919), color-stop(50%,#4f4f4f), color-stop(51%,#3a3a3a), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#191919', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* W3C */
+}
+#bottom label:hover,#bottom button:hover {
+	background: #160000; /* Old browsers */
+	background: -moz-linear-gradient(top, #160000 0%, #4c0000 50%, #380000 51%, #000000 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#160000), color-stop(50%,#4c0000), color-stop(51%,#380000), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #160000 0%,#4c0000 50%,#380000 51%,#000000 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #160000 0%,#4c0000 50%,#380000 51%,#000000 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #160000 0%,#4c0000 50%,#380000 51%,#000000 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#160000', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #160000 0%,#4c0000 50%,#380000 51%,#000000 100%); /* W3C */
+}
+#bottom label.checked,#sell input.active {
+	color:white;
+	background: #a90329; /* Old browsers */
+	background: -moz-linear-gradient(top, #a90329 0%, #8f0222 44%, #6d0019 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a90329), color-stop(44%,#8f0222), color-stop(100%,#6d0019)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #a90329 0%,#8f0222 44%,#6d0019 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #a90329 0%,#8f0222 44%,#6d0019 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #a90329 0%,#8f0222 44%,#6d0019 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #a90329 0%,#8f0222 44%,#6d0019 100%); /* W3C */
+}
+#bottom #grading { width:44px; height:29px; }
+#bottom label.left, #grading, #setValueMin { border-top-left-radius: 5px; border-bottom-left-radius: 5px; }
+#bottom label.right, #signed, #setValueAvg { border-top-right-radius: 5px; border-bottom-right-radius: 5px; margin-right:20px; }
+#bottom #setValueAvg, #bottom #setValueMin, #bottom #setValueTop10 { width:54px; }
+
+#sell input { width:67px; border-radius:5px; height: 29px; font-size:150%; }
+#sell input:disabled { color:gray; cursor:default; }
+
+/* Suggestions */
+#suggestions { display:none; background:white; list-style:none; margin: 5px 0 0; padding: 0; position: absolute; width: 360px; border:2px solid black; border-radius:5px; box-shadow:0 0 5px #000; }
+#suggestions li { cursor:pointer; line-height:30px; position:relative; }
+#suggestions li:nth-child(odd) { background:#d3d3d3; }
+#suggestions li:last-child { border-bottom:none; }
+#suggestions li span { display:block; margin: 0 15px; }
+#suggestions .arrow.left { position:absolute; left:0; }
+#suggestions .arrow.right { position:absolute; right:0; }
+#suggestions .edition { float:right; margin:5px 15px 0 0; }
+#suggestions li:hover, #suggestions li.active {
+	color:white;
+	background: #191919; /* Old browsers */
+	background: -moz-linear-gradient(top, #191919 0%, #4f4f4f 50%, #3a3a3a 51%, #000000 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#191919), color-stop(50%,#4f4f4f), color-stop(51%,#3a3a3a), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* Opera11.10+ */
+	background: -ms-linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* IE10+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#191919', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+	background: linear-gradient(top, #191919 0%,#4f4f4f 50%,#3a3a3a 51%,#000000 100%); /* W3C */
+}
+
+/* Verkaufte Karten */
+#sold { list-style:none; margin:auto; padding:0; width:400px; border:1px solid black; margin-top:10px; }
+#sold a { font-weight:bold; color:white; text-decoration: none; display:inline-block; width:275px; }
+#sold a.foil { color:red; }
+
+/* Icons */
+img.flag { width:16px; height:11px; }
+img.flag.flag-1, label.language-1 { background:url('http://serv2.tcgimages.eu/img/flagicons/1.png') no-repeat; }
+img.flag.flag-2, label.language-2 { background:url('http://serv2.tcgimages.eu/img/flagicons/2.png') no-repeat; }
+img.flag.flag-3, label.language-3 { background:url('http://serv2.tcgimages.eu/img/flagicons/3.png') no-repeat; }
+img.flag.flag-4, label.language-4 { background:url('http://serv2.tcgimages.eu/img/flagicons/4.png') no-repeat; }
+img.flag.flag-5, label.language-5 { background:url('http://serv2.tcgimages.eu/img/flagicons/5.png') no-repeat; }
+img.flag.flag-6, label.language-6 { background:url('http://serv2.tcgimages.eu/img/flagicons/6.png') no-repeat; }
+img.flag.flag-7, label.language-7 { background:url('http://serv2.tcgimages.eu/img/flagicons/7.png') no-repeat; }
+img.flag.flag-8, label.language-8 { background:url('http://serv2.tcgimages.eu/img/flagicons/8.png') no-repeat; }
+img.flag.flag-9, label.language-9 { background:url('http://serv2.tcgimages.eu/img/flagicons/9.png') no-repeat; }
+img.flag.flag-10, label.language-10 { background:url('http://serv2.tcgimages.eu/img/flagicons/10.png') no-repeat; }
+img.flag.flag-x, label.language-x { background:url('http://serv2.tcgimages.eu/img/flagicons/0.png') no-repeat; }
+img.loading { background:url('../images/loader.gif') no-repeat; width:16px; height:16px; }
+span.loading { background:url('../images/loader.gif') no-repeat; padding:0 10px; }
+img.done { background:url('http://serv2.tcgimages.eu/img/cardstateicons/MT.png') no-repeat; width:16px; height:16px; }
+img.grading { margin-bottom:-3px; }
