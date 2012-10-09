@@ -1,4 +1,4 @@
-body {
+﻿body {
 	background:url(../images/background.jpg) repeat-x #464646;
 	font-family:"Tahoma","Verdana",sans-serif;
 	font-size: 14px;
@@ -225,10 +225,12 @@ div.cardlist_container div.sort .cards {
 	background: #999;
 	border-top-left-radius: 5px;
 	border-left: 2px solid #000;
+	filter: none;
 }
 div.cardlist_container div.sort .title {
 	background: #999;
 	border-left:2px solid #000;
+	filter: none;
 }
 div.cardlist_container div.sort .title,div.cardlist_container div.sort .cards { color:black; cursor:auto; }
 div.cardlist_container div.sort .reset:hover,
@@ -441,6 +443,7 @@ div.input:after {
 	vertical-align: middle;
 	width: 19px;
 	background: #464646;
+	right: 0;
 	background: -moz-linear-gradient(top, #464646 0%, #252525 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#464646), color-stop(100%,#252525));
 	background: -webkit-linear-gradient(top, #464646 0%,#252525 100%);
@@ -536,3 +539,57 @@ ul.suggestions li.suggestion span.name_real { font-size:80%; }
 ul.suggestions li.suggestion span.name em { font-weight:bold; font-style:normal; }
 #right ul.suggestions li.suggestion img.thumbnail { left:100%; }
 ul.suggestions li.suggestion.active img.thumbnail { display:block; }
+
+/* Popup */
+#popup {
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 100;
+	display: none;
+	text-align: center;
+}
+#popup .background {
+	background: none repeat scroll 0 0 black;
+	height: 100%;
+	left: 0;
+	opacity: 0.5;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+#popup .window {
+	background: none repeat scroll 0 0 white;
+	border: 2px solid black;
+	border-radius: 10px 10px 10px 10px;
+	box-shadow: 0 2px 4px #000000;
+	font-size: 12px;
+	margin-top: -100px;
+	padding: 10px;
+	position: relative;
+	top: 50%;
+	display: inline-block;
+}
+#popup h1 {
+	font-size: 18px;
+	margin: 0 0 10px;
+	text-align: center;
+}
+#popup .window > p { text-align: left; }
+#popup .close {
+	background: none repeat scroll 0 0 white;
+	border: 2px solid black;
+	border-radius: 6px 6px 6px 6px;
+	box-shadow: 0 0 2px #222222;
+	color: black;
+	display: block;
+	font-weight: bold;
+	margin: 10px auto auto;
+	padding: 0 3px;
+	cursor:pointer;
+}
+#popup .close:hover {
+	background: #999999;
+}

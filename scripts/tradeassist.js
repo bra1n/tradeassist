@@ -76,6 +76,9 @@ function TradeAssist() {
 		$('#controlicons .save').on('click',function(){	this.saveLists(); }.bind(this));
 		$('#controlicons .price').on('click',function(){ this.togglePrices(); }.bind(this));
 	}
+	$('#popup').on('click','.close,.background',function(){
+		$('#popup').fadeOut();
+	});
 	return this;
 }
 
@@ -106,6 +109,8 @@ TradeAssist.prototype.saveLists = function() {
 		$.post(this.url,{'action':'export','arg':JSON.stringify(listExport)},function(response) {
 			if(response) {
 				window.location.hash = response;
+				var url = window.location.toString();
+				this.showPopup("List saved",'List has been saved and can be shared with this URL:<br/><a href="'+url+'">'+url+'</a>')
 			}
 			this.requestRunning = false;
 		}.bind(this));
@@ -132,11 +137,26 @@ TradeAssist.prototype.loadLists = function(id) {
 	}
 };
 
+/**
+ * Wechselt zwischen Min-Price und Average-Price
+ */
 TradeAssist.prototype.togglePrices = function() {
-	TradeAssistCard.prototype.isMinimum = !TradeAssistCard.prototype.isMinimum;
-	var isMinimum = TradeAssistCard.prototype.isMinimum;
+	var isMinimum = TradeAssistCard.prototype.isMinimum = !TradeAssistCard.prototype.isMinimum;
 	$('#controlicons .price').text(isMinimum ? "Use Average Prices":"Use Minimum Prices").toggleClass("min",!isMinimum);
 	$.each(this.cardInterfaces,function(index,element){
 		element.cardlist.togglePrices(isMinimum);
 	}.bind(this));
+	this.showPopup("Switched Prices","The cards are now compared by <b>"+(isMinimum ? "minimum prices":"average prices")+'</b>');
+}
+
+/**
+ * Zeigt ein Popup mit Titel, Text und optionaler Button-Beschriftung
+ * @param title
+ * @param body
+ */
+TradeAssist.prototype.showPopup = function(title, body) {
+	$('#popup .window > h1').text(title);
+	$('#popup .window > p').html(body);
+	$('#popup').fadeIn();
+
 }
