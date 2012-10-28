@@ -73,7 +73,6 @@ function updateCardById($id) {
                 $offers = array();
                 if(preg_match_all('~(<tr\s+class="(?:odd|even) thick hoverator">.*?</tr>)~is',$page,$matches)) {
                     foreach($matches[0] as $match) {
-	                    #echo htmlentities($match);
                         //preprocessing
     			        $match = preg_replace("~\"showMsgBox\('(.*?)'\)\"~is",'""',$match);
     			        $match = preg_replace("~&#?[a-z0-9]{2,6};~is",'',$match);
@@ -283,10 +282,9 @@ function getCardsByIds($cardIds, $fillPrintings = false) {
 }
 
 function getOffersById($id) {
-	$languages = array("Englisch","Französisch","Deutsch","Spanisch","Italienisch","Chinesisch","Japanisch","Portugiesisch","Russisch","Koreanisch");
-	$gradings = array("","Poor","Played","Light Played","Good","Excellent","Near Mint","Mint");
-	$ratings = array("","Schlecht","Durchschnittlich","Gut","Sehr gut","Herausragend");
-	$speed = array("","schnell","sehr schnell");
+	$languages = array("",16,32,48,64,80,96,112,128,144,160,176);
+	$gradings = array("","PO","PL","LP","GD","EX","NM","MT");
+	$ratings = array("E-NULL","SS-5","SS-4","SS-3","SS-2","SS-1");
 	$offers = array();
 	$id = intval($id);
 	$opts = array(
@@ -298,42 +296,61 @@ function getOffersById($id) {
 	);
 	$context = stream_context_create($opts);
 	$page = file_get_contents("http://www.magickartenmarkt.de/_.c1p".$id.".prod",false,$context);
-	$page = preg_replace('~<[^>]*showMsgBox\(\'(.*?)\'\)[^>]*>~is',"$1",$page);
-	$page = preg_replace('~</?(span|a)[^>]*>~is',"\t",$page);
-	if(preg_match_all('~<tr\s+class="(:?odd|even) thick hoverator">(.*?)</tr>~is',$page,$matches)) {
-		$totals = array();
-		foreach($matches[2] as $index=>$match) {
-			$cols = explode("</td>",$match);
-			$line = explode("\t",trim(strip_tags($cols[0])));
-			$offers[$index]['seller'] = trim($line[0]);
-			$offers[$index]['rating'] = trim(str_replace(array("(",")"),"",$line[1]));
-			$offers[$index]['country'] = trim(substr($line[3],17));;
-			$offers[$index]['speed'] = 0;
-			$offers[$index]['level'] = 0;
-			if(isset($line[5]) AND substr($line[5],-10) == "Verkäufer") {
-				$offers[$index]['level'] = array_search(substr($line[5],0,-13),$ratings);
-			}
-			foreach($line as $field) {
-				if(strpos($field,"Dieser Verkäufer verschickt ") === 0) {
-					$offers[$index]['speed'] = array_search(substr($field,29,-1),$speed);
-					break;
+	$totals = array();
+	if(preg_match_all('~(<tr\s+class="(?:odd|even) thick hoverator">.*?</tr>)~is',$page,$matches)) {
+		foreach($matches[0] as $match) {
+			//preprocessing
+			$match = preg_replace("~\"showMsgBox\('Artikelstandort: (.*?)'\)\"~uis",'"$1"',$match);
+			$match = preg_replace("~\"showMsgBox\('(.*?)'\)\"~is",'""',$match);
+			$match = preg_replace("~&#?[a-z0-9]{2,6};~is",'',$match);
+			$match = preg_replace("~</em>~is","</div>",$match);
+			$match = preg_replace("~<img([^>]+)>~is","<img$1/>",$match);
+
+			$xml = @simplexml_load_string($match);
+
+			if($xml) {
+				//xml parsing
+				$isAltered = count($xml->xpath("//img[@alt='altered']")) > 0 ? 1:0;
+				$isFoil = count($xml->xpath("//img[@alt='foil']")) > 0 ? 1:0;
+				$isPlayset = count($xml->xpath("//img[@alt='playset']")) > 0 ? 1:0;
+				$price = floatval(str_replace(",",".",strval(reset($xml->xpath("//td[6]")))));
+				$count = intval(reset($xml->xpath("//td[7]")));
+				$condition = array_search(strval(reset($xml->xpath("//td[3]//img//attribute::alt"))),$gradings);
+				$country = strval(reset($xml->xpath("//td[1]/span/span[2]//attribute::onmouseover")));
+				$seller = strval(reset($xml->xpath("//td[1]/span/span[1]/a")));
+				$rating = substr(strval(reset($xml->xpath("//td[1]/span/span[1]"))),2,-1);
+				$level = array_search(strval(reset($xml->xpath("//td[1]/span/span[3]//attribute::alt"))),$ratings);
+				$language = array_search(preg_replace('/^.*?background-position: ?-?(\d+)px.*?$/i',"$1",strval(reset($xml->xpath("//td[2]//span//attribute::style")))),$languages);
+				$speed = count($xml->xpath("//td[1]/span//img[@alt='fast']"));
+				$speed = count($xml->xpath("//td[1]/span//img[@alt='vfast']")) ? 2:$speed;
+				if($isPlayset) {
+					$count = $count * 4;
+					$price = $price / 4;
 				}
-			}
-			if(array_search(trim(strip_tags($cols[1])),$gradings) === false) {
-				array_splice($cols,1,1);
-			}
-			$offers[$index]['grading'] = array_search(trim(strip_tags($cols[1])),$gradings);
-			$offers[$index]['language'] = array_search(trim(strip_tags($cols[2])),$languages)+1;
-			$offers[$index]['foil'] = (trim(strip_tags($cols[3])) == "Foil" ? 1:0);
-			$offers[$index]['price'] = floatval(str_replace(",",".",trim(strip_tags($cols[6]))));
-			$offers[$index]['amount'] = intval(trim(strip_tags($cols[7])));
-			if(isset($totals[$offers[$index]['seller']][$offers[$index]['foil']])) {
-				$totals[$offers[$index]['seller']][$offers[$index]['foil']] += $offers[$index]['amount'];
+				$offers[] = array(
+					"altered" => $isAltered,
+					"foil"    => $isFoil,
+					"playset" => $isPlayset,
+					"price"     => $price,
+					"amount"     => $count,
+					"grading" => $condition,
+					"country"   => $country,
+					"seller"   => $seller,
+					"rating" => $rating,
+					"speed" => $speed,
+					"level" => $level,
+					"language" => $language
+				);
+				if(isset($totals[$seller][$isFoil])) {
+					$totals[$seller][$isFoil] += $count;
+				} else {
+					$totals[$seller][$isFoil] = $count;
+				}
 			} else {
-				$totals[$offers[$index]['seller']][$offers[$index]['foil']] = $offers[$index]['amount'];
+				$offers = array();
+				break;
 			}
 		}
-
 		//totals setzen
 		foreach($offers as $index=>$offer) {
 			$offers[$index]['total'] = $totals[$offer['seller']][$offer['foil']];

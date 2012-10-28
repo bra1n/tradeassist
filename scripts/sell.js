@@ -1,7 +1,7 @@
 var preferences = {},
 	lastSuggest,
 	suggestTemplate, soldTemplate,
-	languages = ["Kartensprache wählen","Englisch","Französisch","Deutsch","Spanisch","Italienisch","Chinesisch","Japanisch","Portugiesisch","Russisch","Koreanisch"],
+	languages = ["Kartensprache wählen","Englisch","Französisch","Deutsch","Spanisch","Italienisch","S-Chinesisch","Japanisch","Portugiesisch","Russisch","Koreanisch","T-Chinesisch"],
 	gradings = ["Zustand wählen","PO","PL","LP","GD","EX","NM","MT"],
 	gradingTexts = ["Zustand wählen","Poor","Played","Light Played","Good","Excellent","Near Mint","Mint"],
 	levels = ["Verkäuferbewertung wählen","Schlecht","Durchschnittlich","Gut","Sehr gut","Herausragend"],
@@ -250,7 +250,7 @@ function suggest(keycode) {
 								var card = suggestTemplate.clone();
 								card.attr('id','card-'+this.printings[0].id);
 								card.find('.cardname').text(this.name);
-								card.find('.edition').attr('src','images/editions/'+this.printings[0].edition+'.png');
+								card.find('.edition').attr('src','images/editions/'+this.printings[0].ed+'.png');
 								if(this.printings.length == 1) {
 									card.find('.arrow').remove();
 								}
@@ -261,19 +261,20 @@ function suggest(keycode) {
 										} else {
 											that.printings.push(that.printings.shift());
 										}
-										card.find('.edition').attr('src', 'images/editions/' + that.printings[0].edition + '.png');
+										card.find('.edition').attr('src', 'images/editions/' + that.printings[0].ed + '.png');
 										card.attr('id', 'card-' + that.printings[0].id);
 									} else {
 										$('#cardname').val(lastSuggest = that.name);
 										getOffers(card.attr('id').substr(5));
 										$('#cardid').val(card.attr('id').substr(5));
-										$('#cardpreview').html('<img src="'+getImageUrl(that.name,that.printings[0])+'" alt=""/>').show();
+										$('#cardpreview').html('<a href="https://www.magickartenmarkt.de/_.c1p'+that.printings[0].id+'.prod" target="_blank"><img src="'+getImageUrl(that.name,that.printings[0])+'" alt=""/></a>').show();
 										$('#suggestions').empty().hide();
 										$('#sellbutton').attr('disabled',false).addClass('active');
 									}
 								});
 								$('#suggestions').show().append(card.show());
 							});
+							$('#suggestions li:first').addClass('active');
 						}
 					});
 				} else {
@@ -343,7 +344,7 @@ function resetForm() {
 		$('label[for=language-x]').attr('class','language-'+preferences.language);
 	} else {
 		$('#language-1').val(1).attr('checked',true);
-		$('span.language.1').text(1);
+		$('span.language.'+'1').text(1);
 	}
 }
 
@@ -449,7 +450,7 @@ function getImageUrl(name,printing) {
 	var regularImageUrl = 'http://gatherer.wizards.com/Handlers/Image.ashx?';
 	var customImageUrl = 'http://tcgimages.eu/img/cards/';
 	if(printing.img === "") { //reguläre karte
-		imgUrl = regularImageUrl+'type=card&size=small&set='+printing.edition+'&name='+escape(name.replace(/ \(.*?\)/g,''));
+		imgUrl = regularImageUrl+'type=card&size=small&set='+printing.ed+'&name='+escape(name.replace(/ \(.*?\)/g,''));
 	} else {
 		imgUrl = customImageUrl+printing.img;
 	}

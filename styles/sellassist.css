@@ -161,6 +161,8 @@ img.flag.flag-9, label.language-9 { background:url('http://serv2.tcgimages.eu/im
 img.flag.flag-10, label.language-10 { background:url('http://serv2.tcgimages.eu/img/flagicons/10.png') no-repeat; }
 img.flag.flag-x, label.language-x { background:url('http://serv2.tcgimages.eu/img/flagicons/0.png') no-repeat; }
 img.loading { background:url('../images/loader.gif') no-repeat; width:16px; height:16px; }
-span.loading { background:url('../images/loader.gif') no-repeat; padding:0 10px; }
+span.loading { background:url('../images/loader.gif') no-repeat; padding:0 10px; height: 16px;
+display: inline-block;
+vertical-align: middle; }
 img.done { background:url('http://serv2.tcgimages.eu/img/cardstateicons/MT.png') no-repeat; width:16px; height:16px; }
 img.grading { margin-bottom:-3px; }
