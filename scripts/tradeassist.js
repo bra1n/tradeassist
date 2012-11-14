@@ -146,7 +146,10 @@ TradeAssist.prototype.togglePrices = function() {
 	$.each(this.cardInterfaces,function(index,element){
 		element.cardlist.togglePrices(isMinimum);
 	}.bind(this));
-	this.showPopup("Switched Prices","The cards are now compared by <b>"+(isMinimum ? "minimum prices":"average prices")+'</b>');
+	if(this.showMinimumPricePopupOnce !== true) {
+		this.showMinimumPricePopupOnce = true;
+		this.showPopup("Switched Prices","The cards are now compared by <b>"+(isMinimum ? "minimum prices":"average prices")+'</b>');
+	}
 }
 
 /**

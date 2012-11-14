@@ -110,7 +110,9 @@ TradeAssistCard.prototype.setIsMinimum = function(isMinimum) {
 	if(isMinimum != this.isMinimum) {
 		var oldRate = this.getRate();
 		this.isMinimum = isMinimum;
-		if(oldRate >= 0 && this.getRate() >= 0) this.fireEvent("valuechange",[this.getCount()*(this.getRate()-oldRate)]);
+		if(oldRate >= 0 && this.getRate() >= 0) {
+			this.fireEvent("valuechange",[this.getCount()*(this.getRate()-oldRate)]);
+		}
 	}
 };
 
@@ -208,7 +210,7 @@ TradeAssistCard.prototype.getRate = function() {
 	if(this.rates.date == "") {
 		if(this.rates.special != this.getId()) {
 			var id = this.getId();
-//			this.rates.special = id;
+			this.rates.special = id;
 			$.getJSON(this.url,{'action':'value','arg':id},function(response) {
 				if(!response.error && this.getId() == id) {
 					this.rates.normal = parseFloat(response.rate);

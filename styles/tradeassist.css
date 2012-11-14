@@ -419,6 +419,7 @@ input.input_cardname {
 	width: 359px;
 	padding-top: 2px;
 }
+input.input_cardname:focus { outline:none; }
 div.input {
 	background: #fff;
     border: 2px solid black;
@@ -485,14 +486,13 @@ ul.suggestions li.suggestion.active {
 
 ul.suggestions li.suggestion .arrow {
 	display:inline-block;
-	width:12px;
-	height:24px;
+	width:16px;
 	border-left:1px solid black;
 	float:right;
 	vertical-align: middle;
 	color: #fff;
-	font-family: Monospace, Tahoma, sans-serif;
-	font-size: 17px;
+	font-family: Tahoma, sans-serif;
+	font-size: 15px;
 	font-weight: bold;
 	height: 24px;
 	padding: 0 2px;
