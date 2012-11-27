@@ -92,7 +92,7 @@ TradeAssistCardList.prototype.reset = function() {
 	$.each(this.cards,function(){
 		var card = $(this).data('card');
 		card.removeEvents("valuechange");
-		totalValue -= card.getRate() * card.getCount();
+		totalValue -= Math.max(0,card.getRate()) * card.getCount();
 		$(this).slideUp(200,function(){ $(this).remove(); });
 	});
 	this.fireEvent("valuechange",[totalValue]);
