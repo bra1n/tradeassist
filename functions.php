@@ -1,6 +1,6 @@
 <?php
 require "config.php";
-if(isset($_SERVER['HTTP_HOST']) AND preg_match('/'.preg_quote($hostname,"/").'$/i',$_SERVER['HTTP_HOST'])) {
+if(isset($_SERVER['HTTP_HOST']) AND preg_match('/'.$hostname.'$/i',$_SERVER['HTTP_HOST'])) {
 	mysql_connect($db_server,$db_username,$db_password) or die("Couldn't connect to online database: ".mysql_error());
 } else {
 	mysql_connect("127.0.0.1","root","root") or die("Couldn't connect to local database: ".mysql_error());
