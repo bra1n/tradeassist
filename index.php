@@ -19,9 +19,9 @@
 		<!-- Facebook Meta Data -->
 		<meta property="og:image" content="http://tradeassi.st/images/favicon.png"/>
 		<meta property="og:type" content="website"/>
-		<meta property="og:title" content="Virgin Atlantic Advert 2010"/>
-		<meta property="og:url" content="http://tradeassi.st/"/>
+		<meta property="og:title" content="Magic Trade Assist"/>
 		<meta property="og:site_name" content="Magic Trade Assist"/>
+		<meta property="og:description" content="Never make bad trades again - look up card prices instantly and see whether a trade is fair or not."/>
 	</head>
 	<body>
 		<div id="container">
