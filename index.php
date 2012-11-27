@@ -47,7 +47,7 @@
 		</div>
 		<div id="footer">
 			<a href="http://magic.mnt.me"><img src="/images/logo.png" alt="MagicTradeAssist"/></a><br/>
-			MagicTradeAssist v1.1.0 &mdash; steffen[at]mnt[dot]me
+			MagicTradeAssist v1.1.1 &mdash; steffen[at]mnt[dot]me
 		</div>
 		<div id="controlpanel">
 			<div id="controlicons">
