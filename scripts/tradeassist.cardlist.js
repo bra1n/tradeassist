@@ -89,9 +89,11 @@ TradeAssistCardList.prototype.sort = function(field,order) {
  */
 TradeAssistCardList.prototype.reset = function() {
 	var totalValue = 0;
-	$.each(this.cards,function(index,card){
-		totalValue -= card.data('card').getRate() * card.data('card').getCount();
-		card.slideUp(200,function(){ $(this).remove(); });
+	$.each(this.cards,function(){
+		var card = $(this).data('card');
+		card.removeEvents("valuechange");
+		totalValue -= card.getRate() * card.getCount();
+		$(this).slideUp(200,function(){ $(this).remove(); });
 	});
 	this.fireEvent("valuechange",[totalValue]);
 	this.cards = [];
