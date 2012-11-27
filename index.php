@@ -1,6 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr"
+	  xmlns:og="http://opengraphprotocol.org/schema/"
+	  xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<title>Magic Trade Assist</title>
@@ -14,6 +16,12 @@
         <script src="/scripts/tradeassist.valuecounter.js" type="text/javascript"></script>
         <script src="/scripts/tradeassist.card.js" type="text/javascript"></script>
 		<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"/>
+		<!-- Facebook Meta Data -->
+		<meta property="og:image" content="http://tradeassi.st/images/favicon.png"/>
+		<meta property="og:type" content="website"/>
+		<meta property="og:title" content="Virgin Atlantic Advert 2010"/>
+		<meta property="og:url" content="http://tradeassi.st/"/>
+		<meta property="og:site_name" content="Magic Trade Assist"/>
 	</head>
 	<body>
 		<div id="container">
@@ -46,7 +54,7 @@
 			</div>
 		</div>
 		<div id="footer">
-			<a href="http://magic.mnt.me"><img src="/images/logo.png" alt="MagicTradeAssist"/></a><br/>
+			<a href="http://tradeassi.st"><img src="/images/logo.png" alt="MagicTradeAssist"/></a><br/>
 			MagicTradeAssist v1.1.1 &mdash; steffen[at]mnt[dot]me
 		</div>
 		<div id="controlpanel">
