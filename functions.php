@@ -124,7 +124,7 @@ function updateCardByIdFromMKM($id) {
 		$card->rate_foil = 0;
 		$card->rarity = strtolower(substr($page,strpos($page,"cardrarityicons/1/")+18,1));
 		if(!empty($card->name)) {
-			if(preg_match('!src="(?:http://.*?\.tcgimages\.eu|\.)/img/cards/([^"]+)"!i',$page,$matches)) {
+			if(preg_match('!/img/(?:[a-z0-9]+/)?cards/([^"]+)"!i',$page,$matches)) {
 				$card->img_url = $matches[1];
 			}
 			if(preg_match('!<table class="availTable">(.*?)</table>!is',$page,$matches)) {
