@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require "config.php";
 if(isset($_SERVER['HTTP_HOST']) AND preg_match('/'.$hostname.'$/i',$_SERVER['HTTP_HOST'])) {
 	mysql_connect($db_server,$db_username,$db_password) or die("Couldn't connect to online database: ".mysql_error());
@@ -14,9 +14,79 @@ date_default_timezone_set("Europe/Berlin");
  * Gibt die aktualisierte Karte als Objekt zurück.
  *
  * @param int $id
+ * @param str $source
  * @return stdClass
  */
-function updateCardById($id) {
+function updateCardById($id, $source = "mkm") {
+	switch($source){
+		case "us": return updateCardByIdFromUS($id);
+		case "mkm":
+		default: return updateCardByIdFromMKM($id);
+	}
+}
+
+/**
+ * Holt den US spezifischen Preis einer Karte
+ *
+ * @param int $id
+ * @return stdClass
+ */
+function updateCardByIDFromUS($id) {
+	$result = mysql_query("SELECT c.*, e.edition, e.us_name, e.isregular FROM cards c LEFT JOIN editions e ON e.id = c.edition WHERE c.id = '".$id."' LIMIT 1") or die(mysql_error());
+	$card = (object) mysql_fetch_assoc($result);
+	mysql_free_result($result);
+	$card->error = "";
+	if(!isset($card->id)) {
+		$card->error = "id $id not found";
+		return $card;
+	}
+	if($card->isregular AND !in_array($card->rarity,array("t","l"))) {
+		$edition = str_replace(" ","_",$card->us_name=="" ? $card->edition : $card->us_name);
+		// namen für MTGPrice transformieren
+		$name = str_replace(
+			array(" ","â","ú","û","á","í","ö"), // keine Umlaute, keine Leerzeichen
+			array("_","a","u","u","a","i","o"),
+			trim(preg_replace("~Version ?|[:/\(\)]~i","",$card->name))); // keine Klammern oder anderen Sonderzeichen
+		$url = "http://www.mtgprice.com/CardPrice?s=".urlencode($edition)."&n=".urlencode($name);
+		$card->rate = trim(@file_get_contents($url));
+		if($card->rate === "0.00") {
+			$card->error = "failure to load prices for ".$card->name." from $url";
+			$card->rate = 0;
+			$card->rate_foil = 0;
+		} else{
+			if($card->available_foil > 0) {
+				$page = @file_get_contents("http://www.mtgprice.com/sets/".$edition."_(Foil)/$name");
+				if(preg_match('~Fair Trade Price: \$([0-9.]+)~is',$page,$matches)) {
+					$card->rate_foil = $matches[1];
+				} else {
+					$card->rate_foil = 0;
+				}
+			}
+			$sql = "UPDATE cards SET ".
+				"rate_us = '".$card->rate."', ".
+				"rate_foil_us = '".$card->rate_foil."', ".
+				"timestamp_us = NOW() ".
+				"WHERE id = '".$id."'";
+			mysql_query($sql);
+		}
+	} else {
+		$card->rate = 0;
+		$card->rate_foil = 0;
+		$card->error = "unsupported card (".$card->name.")";
+	}
+	$card->minprice = 0;
+	$card->minprice_foil = 0;
+	return $card;
+}
+
+
+/**
+ * Läd den MKM spezifischen Preis einer Karte
+ *
+ * @param int $id
+ * @return stdClass
+ */
+function updateCardByIdFromMKM($id) {
 	$id = intval($id);
 	$card = new stdClass();
 	$card->error = "";
@@ -197,12 +267,12 @@ function updateCardById($id) {
 					"minprice='".$card->minprice."', ".
 					"minprice_foil='".$card->minprice_foil."', ".
 					"img_url='".mysql_real_escape_string($card->img_url)."', ".
-//					"rarity='".mysql_real_escape_string($card->rarity)."', ".
-					"timestamp=NOW() ".
+					"rarity='".mysql_real_escape_string($card->rarity)."', ".
+					"timestamp_mkm=NOW() ".
 					"WHERE id = '".$id."'";
 				mysql_query($sql);
 				if(mysql_affected_rows() == 0 AND !empty($card->edition)) {
-					$sql = "SELECT id FROM editions WHERE edition='".mysql_real_escape_string($card->edition)."' OR alternate_name='".mysql_real_escape_string($card->edition)."' LIMIT 1";
+					$sql = "SELECT id FROM editions WHERE edition='".mysql_real_escape_string($card->edition)."' OR mkm_name='".mysql_real_escape_string($card->edition)."' LIMIT 1";
 					$result = mysql_query($sql);
 					$row = mysql_fetch_assoc($result);
 					mysql_free_result($result);

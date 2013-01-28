@@ -38,7 +38,7 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 		break;
 	/* Kartenwert */
 		case "value":
-			$sql = "SELECT rate,rate_foil,minprice,minprice_foil,timestamp FROM cards WHERE id='".intval($arg)."'";
+			$sql = "SELECT rate,rate_foil,minprice,minprice_foil,timestamp_mkm as timestamp FROM cards WHERE id='".intval($arg)."'";
 			$result = mysql_query($sql);
 			$row = mysql_fetch_array($result,MYSQL_ASSOC);
 			mysql_free_result($result);
@@ -78,7 +78,7 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 				WHERE isregular = 1
 				AND c.id NOT IN ('".implode("','",$exclude)."')
 				AND ABS(1-".($minprice ? 'minprice':'rate')."/'$arg') <= 0.05
-				ORDER BY ABS(1-".($minprice ? 'minprice':'rate')."/'$arg') ASC,timestamp DESC LIMIT 1");
+				ORDER BY ABS(1-".($minprice ? 'minprice':'rate')."/'$arg') ASC,timestamp_mkm DESC LIMIT 1");
 			$row = mysql_fetch_assoc($result);
 			if($row) {
 				$card = new stdClass();
