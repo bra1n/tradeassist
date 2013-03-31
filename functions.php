@@ -44,9 +44,15 @@ function updateCardByIDFromUS($id) {
 		$edition = str_replace(" ","_",$card->us_name=="" ? $card->edition : $card->us_name);
 		// namen für MTGPrice transformieren
 		$name = str_replace(
-			array(" ","â","ú","û","á","í","ö"), // keine Umlaute, keine Leerzeichen
-			array("_","a","u","u","a","i","o"),
-			trim(preg_replace("~Version ?|[:/\(\)]~i","",$card->name))); // keine Klammern oder anderen Sonderzeichen
+			array(" ","â","ú","û","á","í","ö","é","à",'"'), // keine Umlaute, keine Leerzeichen
+			array("_","a","u","u","a","i","o","e","a",''),
+			trim(preg_replace("~Version ?|[:/\(\)]~","",$card->name))); // keine Klammern oder anderen Sonderzeichen
+		// sonderfälle
+		$name = str_replace(
+			array("Big_Furry_Monster_1","Big_Furry_Monster_2"),
+			array("(1)","(2)"),
+			$name
+		);
 		$url = "http://www.mtgprice.com/CardPrice?s=".urlencode($edition)."&n=".urlencode($name);
 		$card->rate = trim(@file_get_contents($url));
 		if($card->rate === "0.00") {
@@ -367,7 +373,7 @@ function getOffersById($id) {
 	$context = stream_context_create($opts);
 	$page = file_get_contents("http://www.magickartenmarkt.de/_.c1p".$id.".prod",false,$context);
 	$totals = array();
-	if(preg_match_all('~(<tr\s+class="(?:odd|even) thick hoverator">.*?</tr>)~is',$page,$matches)) {
+	if(preg_match_all('~(<tr\s+class="row_(?:odd|even) row_\d+">.*?</tr>)~is',$page,$matches)) {
 		foreach($matches[0] as $match) {
 			//preprocessing
 			$match = preg_replace("~\"showMsgBox\('Artikelstandort: (.*?)'\)\"~uis",'"$1"',$match);
