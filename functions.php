@@ -32,7 +32,7 @@ function updateCardById($id, $source = "mkm") {
  * @return stdClass
  */
 function updateCardByIDFromUS($id) {
-	$result = mysql_query("SELECT c.*, e.edition, e.us_name, e.isregular FROM cards c LEFT JOIN editions e ON e.id = c.edition WHERE c.id = '".$id."' LIMIT 1") or die(mysql_error());
+	$result = mysql_query("SELECT c.*, e.id AS edition_id, e.edition, e.us_name, e.isregular FROM cards c LEFT JOIN editions e ON e.id = c.edition WHERE c.id = '".$id."' LIMIT 1") or die(mysql_error());
 	$card = (object) mysql_fetch_assoc($result);
 	mysql_free_result($result);
 	$card->error = "";
@@ -40,47 +40,62 @@ function updateCardByIDFromUS($id) {
 		$card->error = "id $id not found";
 		return $card;
 	}
-	if($card->isregular AND !in_array($card->rarity,array("t","l"))) {
-		$edition = str_replace(" ","_",$card->us_name=="" ? $card->edition : $card->us_name);
-		// namen für MTGPrice transformieren
+	if($card->isregular AND !in_array($card->rarity,array("t"))) {
+		$edition = ($card->us_name=="" ? $card->edition : $card->us_name);
+		// namen säubern
 		$name = str_replace(
-			array(" ","â","ú","û","á","í","ö","é","à",'"'), // keine Umlaute, keine Leerzeichen
-			array("_","a","u","u","a","i","o","e","a",''),
-			trim(preg_replace("~Version ?|[:/\(\)]~","",$card->name))); // keine Klammern oder anderen Sonderzeichen
+			array("â","ú","û","á","í","ö","é","à",'"'), // keine Umlaute, keine Anführungszeichen
+			array("a","u","u","a","i","o","e","a",''),
+			trim(preg_replace('~\(Version (\d+)\)~','[Version $1]',$card->name))); // Versionen in eckigen Klammern
 		// sonderfälle
 		$name = str_replace(
-			array("Big_Furry_Monster_1","Big_Furry_Monster_2"),
-			array("(1)","(2)"),
+			array(") [Version 1]",") [Version 2]"),
+			array(" Left)"," Right)"),
 			$name
 		);
-		$url = "http://www.mtgprice.com/CardPrice?s=".urlencode($edition)."&n=".urlencode($name);
-		$card->rate = trim(@file_get_contents($url));
-		if($card->rate === "0.00") {
-			$card->error = "failure to load prices for ".$card->name." from $url";
-			$card->rate = 0;
-			$card->rate_foil = 0;
-		} else{
-			if($card->available_foil > 0) {
-				$page = @file_get_contents("http://www.mtgprice.com/sets/".$edition."_(Foil)/$name");
-				if(preg_match('~Fair Trade Price: \$([0-9.]+)~is',$page,$matches)) {
-					$card->rate_foil = $matches[1];
-				} else {
-					$card->rate_foil = 0;
-				}
-			}
-			$sql = "UPDATE cards SET ".
-				"rate_us = '".$card->rate."', ".
-				"rate_foil_us = '".$card->rate_foil."', ".
-				"timestamp_us = NOW() ".
-				"WHERE id = '".$id."'";
-			mysql_query($sql);
-		}
+//		$url = "http://www.mtgprice.com/CardPrice?s=".urlencode($edition)."&n=".urlencode($name);
+		$url = "http://magic.tcgplayer.com/db/price_guide.asp?setname=".urlencode($edition);
+		$cards = trim(@file_get_contents($url));
+        $pattern ='~<table width=600 cellpadding=0 cellspacing=0 border=1 align=left>\s*'.
+                  '<TR height=20><td width=200 align=left valign=center><font  class=default_7>'.
+                  '(.*?)</font></td></TR>\s*</table>~is';
+        if(preg_match($pattern,$cards,$matches) AND trim($matches[1])) {
+            // remove ugly spaces
+            $matches[1] = str_replace("&nbsp;","",$matches[1]);
+            // split columns
+            $matches[1] = preg_replace('~</font>(</center>)?</td><td width=\d+ align=(left|right|center) valign=center>(<center>)?<font  ?class=default_7>\$?~is','#col#',$matches[1]);
+            // split rows
+            $matches[1] = preg_replace('~</font>(</center>)?</td></TR><TR height=20><td width=200 align=left valign=center><font  class=default_7>~is','#row#',$matches[1]);
+            $cards = explode("#row#",$matches[1]);
+            // default error
+            $card->error = "card not found (".$card->name.")";
+            foreach($cards as $cardline) {
+                $cardline = explode("#col#",$cardline);
+                if(strtolower($cardline[0]) == strtolower($card->name)) {
+                    // the current card!
+                    $card->rate_us = floatval($cardline[6]);
+                    $card->minprice_us = floatval($cardline[7]);
+                    unset($card->error);
+                }
+                // insert all the new prices into the DB
+                $sql = "UPDATE cards SET ".
+                    "rate_us = '".floatval($cardline[6])."', ".
+                    "minprice_us = '".floatval($cardline[7])."', ".
+                    "timestamp_us = NOW() ".
+                    "WHERE edition = '".$card->edition_id."' AND name = '".mysql_real_escape_string($cardline[0])."'";
+//                mysql_query($sql);
+            }
+            print_r($cards);
+        } else {
+            $card->error = "unsupported edition (".$edition.")";
+        }
+        print_r($card); exit;
 	} else {
 		$card->rate = 0;
-		$card->rate_foil = 0;
+		$card->minprice = 0;
 		$card->error = "unsupported card (".$card->name.")";
 	}
-	$card->minprice = 0;
+	$card->rate_foil = 0;
 	$card->minprice_foil = 0;
 	return $card;
 }
@@ -111,16 +126,19 @@ function updateCardByIdFromMKM($id) {
 		$page = file_get_contents("http://www.magickartenmarkt.de/_.c1p".$id.".prod",false,$context);
 	}
 	
-	if(preg_match('!<h1 class="nameHeader">(?:<span.*?</span>)?(?:&nbsp;)*(.*?) \(([^()]*?)\)(?:<br>(?:<span.*?</span>)?(?:&nbsp;)*(.*?) \(([^()]*?)\))?</h1>!is',$page,$matches)) {
-		if(count($matches)>4) {
-			$card->name_de = str_replace(array("Æ"),array("Ae"),trim($matches[1]));
-			$card->name = str_replace(array("Æ"),array("Ae"),trim($matches[3]));
-			$card->edition = trim($matches[4]);
+	if(preg_match_all('!<h\d+ class="nameHeader">(.*?) \((.*?)\)</h\d+>!is',$page,$matches)) {
+        $card->name = str_replace(array("Æ"),array("Ae"),trim($matches[1][0]));
+        if (strpos("...",$card->name)>=0 // card name too long
+        and preg_match('~<span typeof="v:Breadcrumb" property="v:title">(.*?)</span>~is',$page,$crumbmatches)) {
+            $card->name = $crumbmatches[1]; // take the breadcrumb name
+        }
+		if(count($matches[0])>1) {
+			$card->name_de = str_replace(array("Æ"),array("Ae"),trim($matches[1][1]));
 		} else {
-			$card->name_de = str_replace(array("Æ"),array("Ae"),trim($matches[1]));
-			$card->name = $card->name_de;
-			$card->edition = trim($matches[2]);
+			$card->name_de = $card->name;
 		}
+        $card->edition = trim($matches[2][0]);
+
 		$card->img_url = "";
 		$card->available = 0;
 		$card->minprice = 0;
@@ -150,7 +168,7 @@ function updateCardByIdFromMKM($id) {
                 if(preg_match_all('~(<tr\s+class="(?:odd|even) thick hoverator">.*?</tr>)~is',$page,$matches)) {
                     foreach($matches[0] as $match) {
                         //preprocessing
-    			        $match = preg_replace("~\"showMsgBox\('(.*?)'\)\"~is",'""',$match);
+    			        $match = preg_replace('~"showMsgBox\(\'(.*?)\'\)"~is','""',$match);
     			        $match = preg_replace("~&#?[a-z0-9]{2,6};~is",'',$match);
         				$match = preg_replace("~</em>~is","</div>",$match);
         				$match = preg_replace("~<img([^>]+)>~is","<img$1/>",$match);
@@ -264,7 +282,7 @@ function updateCardByIdFromMKM($id) {
 				}
 
 				$sql = "UPDATE cards SET ".
-//                  "name='".mysql_real_escape_string($card->name)."', ".
+//                    "name='".mysql_real_escape_string($card->name)."', ".
                   	"name_de='".mysql_real_escape_string($card->name_de)."', ".
 					"available='".$card->available."', ".
 					"available_foil='".$card->available_foil."', ".
