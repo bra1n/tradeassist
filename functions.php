@@ -153,7 +153,6 @@ function updateCardByIdFromMKM($id) {
 			}
 			if(preg_match('!<table class="availTable">(.*?)</table>!is',$page,$matches)) {
 				$xml = simplexml_load_string($matches[1]);
-//				print_r($xml);
 				foreach($xml->tr as $row) {
 					switch(mb_strtolower($row->td[0],"UTF-8")) {
 						case "verfügbare artikel:":$card->available = intval($row->td[1]);break;
@@ -164,49 +163,7 @@ function updateCardByIdFromMKM($id) {
 					}
 				}
 				//Offers parsen
-                $offers = array();
-                if(preg_match_all('~(<tr\s+class="(?:odd|even) thick hoverator">.*?</tr>)~is',$page,$matches)) {
-                    foreach($matches[0] as $match) {
-                        //preprocessing
-    			        $match = preg_replace('~"showMsgBox\(\'(.*?)\'\)"~is','""',$match);
-    			        $match = preg_replace("~&#?[a-z0-9]{2,6};~is",'',$match);
-        				$match = preg_replace("~</em>~is","</div>",$match);
-        				$match = preg_replace("~<img([^>]+)>~is","<img$1/>",$match);
-
-    				    $xml = @simplexml_load_string($match);
-
-	                    if($xml) {
-    				        //xml parsing
-        				    $isAltered = count($xml->xpath("//img[@alt='altered']")) > 0 ? true:false;
-        				    $isFoil = count($xml->xpath("//img[@alt='foil']")) > 0 ? true:false;
-        				    $isPlayset = count($xml->xpath("//img[@alt='playset']")) > 0 ? true:false;
-        				    $price = floatval(str_replace(",",".",strval(reset($xml->xpath("//td[6]")))));
-        				    $count = intval(reset($xml->xpath("//td[7]")));
-        				    $condition = strval(reset($xml->xpath("//td[3]//img//attribute::alt")));
-        				    $country = preg_replace('/^.*?background-position: ?-?(\d+)px.*?$/i',"$1",strval(reset($xml->xpath("//td[1]/span/span[2]//attribute::style"))));
-					        $sellerRating = strval(reset($xml->xpath("//td[1]/span/span[3]//attribute::alt")));
-					        $language = preg_replace('/^.*?background-position: ?-?(\d+)px.*?$/i',"$1",strval(reset($xml->xpath("//td[2]//span//attribute::style"))));
-        				    if($isPlayset) {
-        				        $count = $count * 4;
-        				        $price = $price / 4;
-        				    }
-        				    $offers[] = array(
-        				        "isAltered" => $isAltered,
-        				        "isFoil"    => $isFoil,
-        				        "isPlayset" => $isPlayset,
-        				        "price"     => $price,
-        				        "count"     => $count,
-        				        "condition" => $condition,
-        				        "country"   => $country,
-        				        "sellerRating" => $sellerRating,
-        				        "language" => $language
-        				    );
-    				    } else {
-    				        $offers = array();
-    				        break;
-    				    }
-    				}
-    			}
+                $offers = getOffersById($id,$page);
 
                 //Normalwert und Mindestpreis berechnen
 				if($card->available AND count($offers)>0) {
@@ -215,17 +172,17 @@ function updateCardByIdFromMKM($id) {
 					$minprice = 0;
 					
 					foreach($offers as $index=>$offer) {
-					    if($offer["isFoil"] OR $offer["isAltered"]) continue; // keine altered und foil Karten
-						if(!in_array($offer["condition"],array("EX","NM","MT"))) continue; // nur gute Zustände
+					    if($offer["foil"] OR $offer["altered"]) continue; // keine altered und foil Karten
+						if(!in_array($offer["grading"],array(5,6,7))) continue; // nur gute Zustände
 					    if(count($normalCounts) > 1 AND $offer["price"] > 5*array_sum($normalValues)/array_sum($normalCounts) AND $offer["price"] > 5) continue; // keine die >5x des Durchschnitts kosten
-						$normalCounts[] = $offer["count"];
-						$normalValues[] = $offer["count"]*$offer["price"];
+						$normalCounts[] = $offer["amount"];
+						$normalValues[] = $offer["amount"]*$offer["price"];
 						//minpreis
 						if($minprice == 0) {
-							if($offer["country"] != 112) continue; // nur DE Verkäufer
-							if(!in_array($offer["sellerRating"],array("SS-1","SS-2","SS-3"))) continue; // nur gute, sehr gute und herausragende Verkäufer
-							if(!in_array($offer["language"],array(16,48))) continue; // nur deutsche und englische Karten
-							if($offer["condition"] == "EX" && $index <= count($offers)*0.1) continue; // in den ersten 10% der Angebote nur NM / MT Karten berücksichtigen
+							if($offer["country"] != "Deutschland") continue; // nur DE Verkäufer
+							if(!in_array($offer["level"],array(3,4,5))) continue; // nur gute, sehr gute und herausragende Verkäufer
+							if(!in_array($offer["language"],array(1,3))) continue; // nur deutsche und englische Karten
+							if($offer["grading"] == 5 && $index <= count($offers)*0.1) continue; // in den ersten 10% der Angebote nur NM / MT Karten berücksichtigen
 							$minprice = $offer["price"];
 						}
 					}
@@ -247,15 +204,15 @@ function updateCardByIdFromMKM($id) {
 					$minprice = 0;
 
 					foreach($offers as $offer) {
-					    if(!$offer["isFoil"] OR $offer["isAltered"]) continue; // keine altered und nicht-foil Karten
-					    if(!in_array($offer["condition"],array("EX","NM","MT"))) continue; // nur gute zustände
+					    if(!$offer["foil"] OR $offer["altered"]) continue; // keine altered und nicht-foil Karten
+					    if(!in_array($offer["grading"],array(5,6,7))) continue; // nur gute zustände
 					    if(count($foilCounts) > 1 AND $offer["price"] > 5*array_sum($foilValues)/array_sum($foilCounts) AND $offer["price"] > 5) continue; // keine die >5x des Durchschnitts kosten
-						$foilCounts[] = $offer["count"];
-						$foilValues[] = $offer["count"]*$offer["price"];
+						$foilCounts[] = $offer["amount"];
+						$foilValues[] = $offer["amount"]*$offer["price"];
 						//minpreis
 						if($minprice == 0) {
-							if(!in_array($offer["sellerRating"],array("SS-1","SS-2","SS-3"))) continue; // nur gute, sehr gute und herausragende Verkäufer
-							if(!in_array($offer["language"],array(16,48))) continue; // nur deutsche und englische Karten
+							if(!in_array($offer["level"],array(3,4,5))) continue; // nur gute, sehr gute und herausragende Verkäufer
+							if(!in_array($offer["language"],array(1,3))) continue; // nur deutsche und englische Karten
 							$minprice = $offer["price"];
 						}
 					}
@@ -266,6 +223,8 @@ function updateCardByIdFromMKM($id) {
 							$foilCounts[$index] = 0;
 						}
 					}
+
+                    // mehr Foils als non-Foils? Muss eine Foil-Only Karte sein
 					if(($card->rarity == "s" AND $card->available < $card->available_foil)
 					OR ($card->rarity == "r" AND $card->available*2 < $card->available_foil)
 					OR ($card->rarity == "m" AND $card->available*2 < $card->available_foil)) {
@@ -375,21 +334,23 @@ function getCardsByIds($cardIds, $fillPrintings = false) {
 	return $cards;
 }
 
-function getOffersById($id) {
+function getOffersById($id, $page = "") {
 	$languages = array("",16,32,48,64,80,96,112,128,144,160,176);
 	$gradings = array("","PO","PL","LP","GD","EX","NM","MT");
 	$ratings = array("E-NULL","SS-5","SS-4","SS-3","SS-2","SS-1");
 	$offers = array();
 	$id = intval($id);
-	$opts = array(
-	  'http'=>array(
-	    'method'=>"GET",
-	    'header'=>"Accept-language: en,de\r\n" .
-	              "User-agent: Magic Trade Assist (steffen at mnt dot me)\r\n"
-	  )
-	);
-	$context = stream_context_create($opts);
-	$page = file_get_contents("http://www.magickartenmarkt.de/_.c1p".$id.".prod",false,$context);
+    if(!$page) {
+        $opts = array(
+          'http'=>array(
+            'method'=>"GET",
+            'header'=>"Accept-language: en,de\r\n" .
+                      "User-agent: Magic Trade Assist (steffen at mnt dot me)\r\n"
+          )
+        );
+        $context = stream_context_create($opts);
+        $page = file_get_contents("http://www.magickartenmarkt.de/_.c1p".$id.".prod",false,$context);
+    }
 	$totals = array();
 	if(preg_match_all('~(<tr\s+class="row_(?:odd|even) row_\d+">.*?</tr>)~is',$page,$matches)) {
 		foreach($matches[0] as $match) {
@@ -417,6 +378,9 @@ function getOffersById($id) {
 				$language = array_search(preg_replace('/^.*?background-position: ?-?(\d+)px.*?$/i',"$1",strval(reset($xml->xpath("//td[2]//span//attribute::style")))),$languages);
 				$speed = count($xml->xpath("//td[1]/span//img[@alt='fast']"));
 				$speed = count($xml->xpath("//td[1]/span//img[@alt='vfast']")) ? 2:$speed;
+                // no seller? no offer!
+                if(!$seller) continue;
+                // handle playsets
 				if($isPlayset) {
 					$count = $count * 4;
 					$price = $price / 4;
