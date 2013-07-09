@@ -126,7 +126,7 @@ function updateCardByIdFromMKM($id) {
 		$page = file_get_contents("http://www.magickartenmarkt.de/_.c1p".$id.".prod",false,$context);
 	}
 	
-	if(preg_match_all('!<h\d+ class="nameHeader">(.*?) \((.*?)\)</h\d+>!is',$page,$matches)) {
+	if(preg_match_all('!<h\d+ class="nameHeader">(.*?) \(([^)]+?)\)</h\d+>!is',$page,$matches)) {
         $card->name = str_replace(array("Æ"),array("Ae"),trim($matches[1][0]));
         if (strpos("...",$card->name)>=0 // card name too long
         and preg_match('~<span typeof="v:Breadcrumb" property="v:title">(.*?)</span>~is',$page,$crumbmatches)) {
