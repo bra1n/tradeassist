@@ -365,6 +365,8 @@ function calculatePrice(mode) {
         if(stripFilter < ++filterNumber && $('#foil').is(':checked') && !this.foil) return true;
         // nur Angebote mit min. der selben Menge an Karten insgesamt
         if(stripFilter < ++filterNumber && this.total < $('input[name=count]:checked').val()) return true;
+        // fremdsprachige Karten ignorieren (außer DE / EN)
+        if(stripFilter < ++filterNumber && this.language != 1 && this.language != 3) return true;
         // nur Händler mit min. der gewählten Versandgeschwindigkeit
         if(stripFilter < ++filterNumber && preferences.speed && this.speed < preferences.speed) return true;
         // nur Händler mit min. der gewählten Bewertung
@@ -396,7 +398,7 @@ function calculatePrice(mode) {
         var x = 0;
         $.each(filteredOffers,function(){
           x++;
-          proposedPrice = this.price - 0.01;
+          proposedPrice = this.price;
           if(x==10) {
             return false;
           }
@@ -404,7 +406,7 @@ function calculatePrice(mode) {
         break;
       case 'min':
       default: //Minimalpreis
-        proposedPrice = filteredOffers[0].price - 0.01;
+        proposedPrice = filteredOffers[0].price;
         break;
     }
   }

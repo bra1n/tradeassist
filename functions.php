@@ -354,6 +354,7 @@ function getOffersById($id, $page = "") {
 	$totals = array();
 	if(preg_match_all('~(<tr\s+class="row_(?:odd|even) row_\d+">.*?</tr>)~is',$page,$matches)) {
 		foreach($matches[0] as $match) {
+            if(strpos($match,"horList") === false) continue;
 			//preprocessing
 			$match = preg_replace("~\"showMsgBox\('Artikelstandort: (.*?)'\)\"~uis",'"$1"',$match);
 			$match = preg_replace("~\"showMsgBox\('(.*?)'\)\"~is",'""',$match);
