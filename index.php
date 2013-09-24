@@ -45,11 +45,9 @@
 			</div>
 			<br style="clear:both"/>
 			<div id="popup">
-				<div class="background"></div>
 				<div class="window">
 					<h1></h1>
 					<p></p>
-					<button class="close">Close</button>
 				</div>
 			</div>
 		</div>
