@@ -26,8 +26,8 @@
 	<body>
 		<div id="container">
 			<div id="left">
-				<div class="propose"></div>
 				<div class="counter"><span class="currentvalue">0,00</span></div>
+				<div class="propose"></div>
 				<div class="cardlist_container"></div>
 				<div class="input">
 					<input type="text" name="cardname" tabindex="1" autocomplete="off"

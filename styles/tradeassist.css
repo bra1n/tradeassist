@@ -14,11 +14,9 @@ a img {
   width: 820px;
   margin: auto; }
 
-#left {
-  float: left; }
-
-#right {
-  float: right; }
+#left, #right {
+  display: inline-block;
+  vertical-align: top; }
 
 #footer {
   text-align: center;
@@ -137,15 +135,18 @@ img#fullcard {
   border: 2px solid black;
   height: 58px;
   width: 206px;
-  margin-top: 20px;
-  cursor: pointer;
-  float: right;
+  display: inline-block;
+  vertical-align: middle;
   margin-left: 5px;
   background: #999999;
-  display: none;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
-  box-shadow: 0 2px 4px #111; }
+  box-shadow: 0 2px 4px #111;
+  opacity: 0;
+  transition: opacity 400ms; }
+  .propose.show {
+    opacity: 1;
+    cursor: pointer; }
   .propose:hover {
     background: #ffffff; }
   .propose div.name {
@@ -172,6 +173,8 @@ img#fullcard {
 
 /* Counter */
 div.counter {
+  display: inline-block;
+  vertical-align: middle;
   color: #ffffff;
   text-align: center;
   height: 90px;
@@ -254,178 +257,147 @@ ul.cardlist {
   width: 404px;
   clear: both;
   margin: 0; }
-
-ul.cardlist li.card {
-  width: 400px;
-  height: 58px;
-  line-height: 24px;
-  background: white;
-  display: none;
-  position: relative;
-  border: 1px solid black;
-  border-left: 2px solid black;
-  border-right: 2px solid black;
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 6px;
-  box-shadow: 0 2px 6px #222; }
-
-ul.cardlist li.card:first-child {
-  border-top: 2px solid black; }
-
-ul.cardlist li.card:last-child {
-  border-bottom: 2px solid black; }
-
-ul.cardlist div.right {
-  float: right;
-  text-align: right;
-  vertical-align: middle; }
-
-ul.cardlist div.right br {
-  display: block; }
-
-ul.cardlist button.minus,
-ul.cardlist button.plus {
-  width: 20px;
-  height: 29px;
-  border: none;
-  padding: 0;
-  vertical-align: middle;
-  cursor: pointer;
-  color: #fff;
-  font-size: 20px;
-  text-shadow: 0 2px 2px #000;
-  padding-bottom: 5px; }
-
-ul.cardlist button.minus {
-  background: #353535;
-  background: -moz-linear-gradient(top, #353535 0%, #252525 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #353535), color-stop(100%, #252525));
-  background: -webkit-linear-gradient(top, #353535 0%, #252525 100%);
-  background: -o-linear-gradient(top, #353535 0%, #252525 100%);
-  background: -ms-linear-gradient(top, #353535 0%, #252525 100%);
-  background: linear-gradient(to bottom, #353535 0%, #252525 100%); }
-
-ul.cardlist button.plus {
-  background: #464646;
-  background: -moz-linear-gradient(top, #464646 0%, #353535 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #464646), color-stop(100%, #353535));
-  background: -webkit-linear-gradient(top, #464646 0%, #353535 100%);
-  background: -o-linear-gradient(top, #464646 0%, #353535 100%);
-  background: -ms-linear-gradient(top, #464646 0%, #353535 100%);
-  background: linear-gradient(to bottom, #464646 0%, #353535 100%); }
-
-ul.cardlist button.minus:hover,
-ul.cardlist button.plus:hover {
-  background: #252525;
-  background: -moz-linear-gradient(top, #252525 0%, #464646 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #252525), color-stop(100%, #464646));
-  background: -webkit-linear-gradient(top, #252525 0%, #464646 100%);
-  background: -o-linear-gradient(top, #252525 0%, #464646 100%);
-  background: -ms-linear-gradient(top, #252525 0%, #464646 100%);
-  background: linear-gradient(to bottom, #252525 0%, #464646 100%); }
-
-ul.cardlist li.card span {
-  padding: 5px 3px 0 0; }
-
-ul.cardlist li.card span.rate {
-  font-weight: bold; }
-
-ul.cardlist li.card span.rate:after {
-  content: "€";
-  font-size: 12px;
-  font-weight: normal; }
-
-ul.cardlist li.card div.name {
-  padding-top: 3px; }
-
-ul.cardlist li.card span.rate.loader {
-  padding-left: 20px;
-  background: url(../images/loader.gif) 0 5px no-repeat; }
-
-ul.cardlist li.card span.rate.foil {
-  color: #808000;
-  font-weight: bold; }
-
-ul.cardlist li.card span.rate.min {
-  border-bottom: 2px solid red; }
-
-ul.cardlist li.card img.edition {
-  margin: -5px 3px 0 0; }
-
-ul.cardlist li.card img.edition.choice {
-  cursor: pointer;
-  margin: 0 1px;
-  padding: 2px;
-  border-radius: 4px; }
-
-ul.cardlist li.card img.edition.multiple {
-  border-radius: 5px;
-  box-shadow: 0px 0px 4px #000;
-  padding: 2px;
-  border: 1px solid #000;
-  cursor: pointer; }
-
-ul.cardlist li.card img.edition.choice:hover {
-  background: #fff; }
-
-ul.cardlist li.card img.edition.multiple:hover {
-  background-color: #999; }
-
-ul.cardlist li.card div.editions {
-  position: absolute;
-  max-width: 315px;
-  background: #999;
-  right: 35px;
-  z-index: 100;
-  text-align: center;
-  display: inline-block;
-  border-radius: 5px;
-  border: 2px solid black;
-  padding: 2px;
-  margin-top: -6px;
-  box-shadow: 0 0 5px #333; }
-
-ul.cardlist li.card .checkbox.foil {
-  display: inline-block;
-  width: 29px;
-  height: 20px;
-  background: url("../images/foil.png") 5px -20px no-repeat;
-  cursor: pointer;
-  vertical-align: middle;
-  margin: -5px 5px 0 5px; }
-
-ul.cardlist li.card .checkbox.foil.checked {
-  background-position: 0px 0px; }
-
-ul.cardlist li.card .checkbox.foil.locked {
-  background-position: -29px -20px;
-  opacity: 0.5;
-  cursor: default; }
-
-ul.cardlist li.card .checkbox.foil.checked.locked {
-  background-position: -29px 0px;
-  cursor: default; }
-
-ul.cardlist img.thumbnail {
-  height: 50px;
-  vertical-align: middle;
-  float: left;
-  margin: 5px;
-  margin-left: 6px;
-  border-radius: 4px;
-  box-shadow: 0px 0px 5px #000;
-  min-width: 36px; }
-
-ul.cardlist .name.foil {
-  font-weight: bold;
-  font-style: italic;
-  color: #808000; }
-
-ul.cardlist img.rarity {
-  width: 10px;
-  border: 0px solid black;
-  border-left-width: 1px;
-  height: 29px; }
+  ul.cardlist li.card {
+    width: 400px;
+    height: 58px;
+    line-height: 24px;
+    background: white;
+    display: none;
+    position: relative;
+    border: 1px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 2px 6px #222; }
+    ul.cardlist li.card:first-child {
+      border-top: 2px solid black; }
+    ul.cardlist li.card:last-child {
+      border-bottom: 2px solid black; }
+    ul.cardlist li.card div.right {
+      float: right;
+      text-align: right;
+      vertical-align: middle; }
+      ul.cardlist li.card div.right br {
+        display: block; }
+      ul.cardlist li.card div.right button.minus, ul.cardlist li.card div.right button.plus {
+        width: 20px;
+        height: 29px;
+        border: none;
+        padding: 0;
+        vertical-align: middle;
+        cursor: pointer;
+        color: #fff;
+        font-size: 20px;
+        text-shadow: 0 2px 2px #000;
+        padding-bottom: 5px;
+        line-height: 29px; }
+        ul.cardlist li.card div.right button.minus.minus, ul.cardlist li.card div.right button.plus.minus {
+          background: #353535;
+          background: -moz-linear-gradient(top, #353535 0%, #252525 100%);
+          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #353535), color-stop(100%, #252525));
+          background: -webkit-linear-gradient(top, #353535 0%, #252525 100%);
+          background: -o-linear-gradient(top, #353535 0%, #252525 100%);
+          background: -ms-linear-gradient(top, #353535 0%, #252525 100%);
+          background: linear-gradient(to bottom, #353535 0%, #252525 100%); }
+        ul.cardlist li.card div.right button.minus.plus, ul.cardlist li.card div.right button.plus.plus {
+          background: #464646;
+          background: -moz-linear-gradient(top, #464646 0%, #353535 100%);
+          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #464646), color-stop(100%, #353535));
+          background: -webkit-linear-gradient(top, #464646 0%, #353535 100%);
+          background: -o-linear-gradient(top, #464646 0%, #353535 100%);
+          background: -ms-linear-gradient(top, #464646 0%, #353535 100%);
+          background: linear-gradient(to bottom, #464646 0%, #353535 100%); }
+        ul.cardlist li.card div.right button.minus.minus:hover, ul.cardlist li.card div.right button.minus.plus:hover, ul.cardlist li.card div.right button.plus.minus:hover, ul.cardlist li.card div.right button.plus.plus:hover {
+          background: #252525;
+          background: -moz-linear-gradient(top, #252525 0%, #464646 100%);
+          background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #252525), color-stop(100%, #464646));
+          background: -webkit-linear-gradient(top, #252525 0%, #464646 100%);
+          background: -o-linear-gradient(top, #252525 0%, #464646 100%);
+          background: -ms-linear-gradient(top, #252525 0%, #464646 100%);
+          background: linear-gradient(to bottom, #252525 0%, #464646 100%); }
+    ul.cardlist li.card div.name {
+      padding-top: 3px; }
+    ul.cardlist li.card div.name.foil {
+      font-weight: bold;
+      text-shadow: 0 0 6px gold; }
+    ul.cardlist li.card span {
+      padding: 5px 3px 0 0; }
+    ul.cardlist li.card span.rate {
+      font-weight: bold; }
+    ul.cardlist li.card span.rate:after {
+      content: "€";
+      font-size: 12px;
+      font-weight: normal; }
+    ul.cardlist li.card span.rate.loader {
+      padding-left: 20px;
+      background: url(../images/loader.gif) 0 5px no-repeat; }
+    ul.cardlist li.card span.rate.foil {
+      text-shadow: 0 0 6px gold;
+      font-weight: bold; }
+    ul.cardlist li.card span.rate.min {
+      border-bottom: 2px solid red; }
+    ul.cardlist li.card img.edition {
+      margin: -5px 3px 0 0; }
+    ul.cardlist li.card img.edition.choice {
+      cursor: pointer;
+      margin: 0 1px;
+      padding: 2px;
+      border-radius: 4px; }
+      ul.cardlist li.card img.edition.choice:hover {
+        background: #fff; }
+    ul.cardlist li.card img.edition.multiple {
+      border-radius: 5px;
+      box-shadow: 0px 0px 4px #000;
+      padding: 2px;
+      border: 1px solid #000;
+      cursor: pointer; }
+      ul.cardlist li.card img.edition.multiple:hover {
+        background-color: #999; }
+    ul.cardlist li.card div.editions {
+      position: absolute;
+      max-width: 315px;
+      background: #999;
+      right: 35px;
+      z-index: 100;
+      text-align: center;
+      display: inline-block;
+      border-radius: 5px;
+      border: 2px solid black;
+      padding: 2px;
+      margin-top: -6px;
+      box-shadow: 0 0 5px #333; }
+    ul.cardlist li.card .checkbox.foil {
+      display: inline-block;
+      width: 29px;
+      height: 20px;
+      background: url("../images/foil.png") 5px -20px no-repeat;
+      cursor: pointer;
+      vertical-align: middle;
+      margin: -5px 5px 0 5px; }
+      ul.cardlist li.card .checkbox.foil.checked {
+        background-position: 0px 0px; }
+      ul.cardlist li.card .checkbox.foil.locked {
+        background-position: -29px -20px;
+        opacity: 0.5;
+        cursor: default; }
+      ul.cardlist li.card .checkbox.foil.checked.locked {
+        background-position: -29px 0px;
+        cursor: default; }
+    ul.cardlist li.card img.thumbnail {
+      height: 50px;
+      vertical-align: middle;
+      float: left;
+      margin: 5px;
+      margin-left: 6px;
+      border-radius: 4px;
+      box-shadow: 0px 0px 5px #000;
+      min-width: 36px; }
+    ul.cardlist li.card img.rarity {
+      width: 10px;
+      border: 0px solid black;
+      border-left-width: 1px;
+      height: 29px; }
 
 /* Suggestions */
 input.input_cardname {
@@ -453,12 +425,13 @@ div.input {
 
 div.input:after {
   color: #fff;
+  font-family: "Verdana";
   content: "↓";
   display: inline-block;
   font-size: 16px;
   font-weight: bolder;
   height: 24px;
-  line-height: 23px;
+  line-height: 25px;
   position: absolute;
   text-align: center;
   vertical-align: middle;
@@ -516,6 +489,7 @@ ul.suggestions li.suggestion .arrow {
   padding: 0 2px;
   text-align: center;
   vertical-align: middle;
+  font-family: "Verdana";
   background: #464646;
   background: -moz-linear-gradient(top, #464646 0%, #252525 100%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #464646), color-stop(100%, #252525));

@@ -52,12 +52,6 @@ TradeAssistBase.prototype = {
       fn.apply(this, args);
     });
     return this;
-  },
-  setTest: function(value) {
-    this.test = value;
-  },
-  getTest: function() {
-    return this.test;
   }
 };
 
@@ -69,7 +63,6 @@ TradeAssistBase.prototype = {
 function TradeAssist() {
   this.cardInterfaces = [];
   this.requestRunning = false;
-  this.useMinimumPrices = false;
   if(window.location.hash != "") this.loadLists(window.location.hash.substr(1));
   // bind hooks
   if($('#controlicons').length) {
@@ -147,7 +140,7 @@ TradeAssist.prototype.togglePrices = function() {
     element.cardlist.togglePrices(isMinimum);
   }.bind(this));
   this.showPopup("Switched Prices","The cards are now compared by <b>"+(isMinimum ? "minimum prices":"average prices")+'</b>');
-}
+};
 
 /**
  * Zeigt ein Popup mit Titel, Text und optionaler Button-Beschriftung
