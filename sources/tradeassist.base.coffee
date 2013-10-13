@@ -93,7 +93,3 @@ class TradeAssist extends TradeAssistBase
       .find('h1').text(title).end()
       .find('p').html(body).end()
       .appendTo('#popup').slideDown().delay(2500).fadeOut -> $(@).remove()
-
-# hack while migrating to coffee
-window.TradeAssistBase = TradeAssistBase
-window.TradeAssist = TradeAssist

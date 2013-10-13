@@ -66,6 +66,3 @@ class TradeAssistValueCounter extends TradeAssistBase
       max = counter.currentValue unless max?
       max = counter.currentValue if counter.currentValue > max
     @currentValue == max
-
-# hack until it is all one big coffee file
-window.TradeAssistValueCounter = TradeAssistValueCounter

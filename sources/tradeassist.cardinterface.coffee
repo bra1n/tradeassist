@@ -98,6 +98,3 @@ class TradeAssistCardInterface extends TradeAssistBase
       # less than 5% difference
       @xhr?.abort()
       @propose.off('click').removeClass 'show'
-
-# hack until it is all one big coffee file
-window.TradeAssistCardInterface = TradeAssistCardInterface

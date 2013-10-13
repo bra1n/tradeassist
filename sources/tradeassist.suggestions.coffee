@@ -114,6 +114,3 @@ class TradeAssistSuggestions extends TradeAssistBase
 
 	# Credit: XRegExp 0.6.1 (c) 2007-2008 Steven Levithan <http://stevenlevithan.com/regex/xregexp/> MIT License
   escapeRegExp: (string) -> string.replace /[-[\]{}()*+?.\\^$|,#\s]/g, (match) -> '\\' + match
-
-# hack until it is all one big coffee file
-window.TradeAssistSuggestions = TradeAssistSuggestions

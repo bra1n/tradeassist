@@ -175,6 +175,3 @@ class TradeAssistCardList extends TradeAssistBase
     @updateCounter()
     @sort 'rate', @sortElements.find('.active').hasClass('down') if @sortElements.find('.active').text() is "price"
     @fireEvent "valuechange", [value]
-
-# hack until it is all one big coffee file
-window.TradeAssistCardList = TradeAssistCardList

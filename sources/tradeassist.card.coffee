@@ -153,6 +153,3 @@ class TradeAssistCard extends TradeAssistBase
     cloneFields = ["name","printings","rates","count","isFoil","isMinimum"]
     clone[field] = @[field] for field in cloneFields
     clone
-
-# hack until it is all one big coffee file
-window.TradeAssistCard = TradeAssistCard
