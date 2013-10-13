@@ -466,7 +466,7 @@ ul.suggestions li.suggestion.active img.thumbnail { display:block; }
 }
 
 // mobile styles
-//@media only screen and (max-device-width: 480px) {
+@media only screen and (max-device-width: 480px) {
   #left, #right {
     display:block;
     &.inactive {
@@ -516,4 +516,4 @@ ul.suggestions li.suggestion.active img.thumbnail { display:block; }
     }
   }
   .propose { display:none; }
-//}
+}
