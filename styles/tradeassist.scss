@@ -27,10 +27,11 @@ body {
 
 img,input { vertical-align:middle; }
 a img { border:0; }
-#container { width:820px; margin:auto; }
+#container { text-align: center; position: relative; }
 #left, #right {
   display: inline-block;
   vertical-align: top;
+  text-align: left;
 }
 #footer { text-align:center;font-size:10px;color:grey;clear:both;padding-top:20px; }
 
@@ -84,8 +85,8 @@ img#fullcard {
       line-height: 16px;
       &:hover { color:white; }
     }
-    .save { background:url(../images/images.png) -290px 0 no-repeat; }
-    .load { background:url(../images/images.png) -290px 0 no-repeat; }
+    .save { background:url(../images/save.png) left center no-repeat; }
+    .load { background:url(../images/save.png) left center no-repeat; }
     .price { background:url(../images/coins_alot.png) no-repeat; }
     .price.min { background:url(../images/coins_normal.png) no-repeat; }
   }
@@ -107,7 +108,12 @@ img#fullcard {
   transition: opacity 400ms;
   &.show { opacity: 1; cursor: pointer; }
   &:hover { background:#ffffff; }
-  div.name { padding-top:7px; line-height:100%; }
+  div.name {
+    padding-top:7px;
+    line-height:100%;
+    overflow: hidden;
+    height: 44px;
+  }
   img.edition {
     margin-top:34px;
     margin-right:3px;
@@ -211,7 +217,7 @@ ul.cardlist {
   li.card {
     width: 400px;
     height: 58px;
-    line-height: 24px;
+    line-height: 25px;
     background: white;
     display: none;
     position: relative;
@@ -221,6 +227,7 @@ ul.cardlist {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
     box-shadow: 0 2px 6px #222;
+    overflow: hidden;
     &:first-child {	border-top: 2px solid black; }
     &:last-child { border-bottom: 2px solid black; }
     div.right {
@@ -318,8 +325,8 @@ ul.cardlist {
 input.input_cardname {
   border: none;
   border-bottom: 1px solid black;
-  height: 16px;
-  margin: 0 5px;
+  height: 15px;
+  margin: 2px 5px;
   vertical-align: middle;
   width: 359px;
   padding-top: 2px;
@@ -330,7 +337,7 @@ div.input {
   border: 2px solid black;
   border-bottom-left-radius: 6px;
   border-top-left-radius: 6px;
-  height: 24px;
+  padding: 2px 0;
   margin-top: 10px;
   position: relative;
   width: 388px;
@@ -343,18 +350,15 @@ div.input:after {
   display: inline-block;
   font-size: 16px;
   font-weight: bolder;
-  height: 24px;
-  line-height: 25px;
+  height: 100%;
+  line-height: 28px;
   position: absolute;
   text-align: center;
   vertical-align: middle;
   width: 19px;
   right: 0;
+  bottom: 0;
   @include gradient-v(#464646,#252525);
-}
-input.input_cardname.inactive {
-  font-style:italic;
-  color:grey;
 }
 ul.suggestions {
   list-style-type:none;
@@ -430,7 +434,7 @@ ul.suggestions li.suggestion.active img.thumbnail { display:block; }
 
 /* Popup */
 #popup {
-  position: absolute;
+  position: fixed;
   z-index: 100;
   display: block;
   text-align: center;
@@ -460,3 +464,56 @@ ul.suggestions li.suggestion.active img.thumbnail { display:block; }
     }
   }
 }
+
+// mobile styles
+//@media only screen and (max-device-width: 480px) {
+  #left, #right {
+    display:block;
+    &.inactive {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 2;
+      div.counter { opacity: 0.5; }
+      .cardlist_container, .input, .suggestions { display: none; }
+    }
+  }
+  #right .counter { text-align:right; }
+
+  div.counter {
+    height:64px;
+    width: 100%;
+    text-align: left;
+    span.currentvalue { line-height: 56px; }
+  }
+  div.input {
+    width:auto;
+    display: block;
+    padding-right: 30px;
+    input.input_cardname {
+      width:100%;
+      height: 25px;
+    }
+    &:after { line-height: 38px; }
+  }
+  ul.suggestions {
+    position: relative;
+    li.suggestion {
+      width: auto;
+      height: 34px;
+      line-height: 34px;
+      img.edition { padding: 7px 12px 6px 12px; }
+      .arrow { width:26px; height: 34px; }
+    }
+    li.suggestion.active img.thumbnail { display:none; }
+  }
+  ul.cardlist {
+    width:auto;
+    li.card {
+      width:auto;
+      div.name { margin-left: 10px; }
+      div.right button.minus, div.right button.plus { width: 40px; }
+    }
+  }
+  .propose { display:none; }
+//}

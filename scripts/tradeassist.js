@@ -60,6 +60,8 @@
 
     TradeAssist.prototype.requestRunning = false;
 
+    TradeAssist.prototype.isMobile = false;
+
     function TradeAssist() {
       var _this = this;
       if (window.location.hash !== "") {
@@ -73,11 +75,15 @@
           return _this.togglePrices();
         });
       }
+      $('#container > div').on('click', '.counter', function() {
+        return $(this).closest('.inactive').removeClass('inactive').siblings('div').addClass('inactive');
+      });
       this.popup = $('#popup').on('click', '.window', function() {
         return $(this).stop().fadeOut(function() {
           return $(this).remove();
         });
       }).find('.window');
+      this.isMobile = $('#left').css('display') === 'block';
     }
 
     TradeAssist.prototype.addCardInterface = function(side) {
@@ -134,7 +140,7 @@
       $.each(this.cardInterfaces, function(index, element) {
         return element.cardlist.togglePrices(isMinimum);
       });
-      return this.showPopup("Switched Prices", "The cards are now compared by <b>" + (isMinimum ? "minimum" : "average") + " prices</b>");
+      return this.showPopup("Switched Prices", "The cards are now compared by <em>" + (isMinimum ? "minimum" : "average") + " prices</em>");
     };
 
     TradeAssist.prototype.showPopup = function(title, body) {

@@ -7,9 +7,10 @@
   TradeAssistCardList = (function(_super) {
     __extends(TradeAssistCardList, _super);
 
-    function TradeAssistCardList(cardlistElement) {
+    function TradeAssistCardList(cardlistElement, tradeAssist) {
       var self,
         _this = this;
+      this.tradeAssist = tradeAssist;
       this.cards = [];
       this.events = {};
       self = this;
@@ -122,14 +123,12 @@
     };
 
     TradeAssistCardList.prototype.updateCounter = function() {
-      var counter, _ref;
+      var counter;
       counter = 0;
       $.each(this.cards, function(index, card) {
         return counter += card.data('card').getCount();
       });
-      this.sortElements.find('.cards').html("<strong>" + counter + "</strong> card" + ((_ref = counter === 1) != null ? _ref : {
-        "": "s"
-      }));
+      this.sortElements.find('.cards').html("<strong>" + counter + "</strong> card" + (counter === 1 ? "" : "s"));
       if (counter) {
         this.sortElements.slideDown();
       }
@@ -171,7 +170,8 @@
     };
 
     TradeAssistCardList.prototype.generateCardTemplate = function(card) {
-      var cardContainer, rightContainer;
+      var cardContainer, rightContainer, self;
+      self = this;
       cardContainer = $('<li class="card"></li>');
       rightContainer = $('<div class="right"></div>');
       rightContainer.append('<span class="count">' + card.getCount() + 'x</span><span class="rate' + (card.getIsFoil() ? ' foil' : '') + (card.getIsMinimum() ? ' min' : '') + '"></span>');
@@ -216,6 +216,9 @@
       cardContainer.append($('<a href="' + card.getMKMLink() + '" target="_blank"><img class="thumbnail" alt="' + card.getName() + '" title="' + card.getName() + '" src="' + card.getImage() + '"/></a>').on({
         mouseenter: function() {
           var el;
+          if (self.tradeAssist.isMobile) {
+            return;
+          }
           el = $(this).find('.thumbnail');
           $('#fullcard').stop().remove();
           return el.clone().attr('id', 'fullcard').css(el.offset()).css({
@@ -230,7 +233,7 @@
           });
         }
       }));
-      cardContainer.append('<div class="name">' + card.getName("en", 60) + '</div>').data('card', card);
+      cardContainer.append('<div class="name">' + card.getName("en") + '</div>').data('card', card);
       if (card.getRate() >= 0) {
         this.handleValueChange(cardContainer, card.getRate());
       } else {

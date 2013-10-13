@@ -199,7 +199,7 @@ function updateCardByIdFromMKM($id) {
 
 				//Foilwert und Foil-Mindespreis berechnen
 				if($card->available_foil AND count($offers)>0) {
-				    $foilCounts = array();
+				  $foilCounts = array();
 					$foilValues = array();
 					$minprice = 0;
 
@@ -216,28 +216,29 @@ function updateCardByIdFromMKM($id) {
 							$minprice = $offer["price"];
 						}
 					}
-					
-					foreach($foilValues as $index=>$value) {
-						if(($value/$foilCounts[$index]) > 3*array_sum($foilValues)/array_sum($foilCounts)) {
-							$foilValues[$index] = 0;
-							$foilCounts[$index] = 0;
-						}
-					}
 
-                    // mehr Foils als non-Foils? Muss eine Foil-Only Karte sein
-					if(($card->rarity == "s" AND $card->available < $card->available_foil)
-					OR ($card->rarity == "r" AND $card->available*2 < $card->available_foil)
-					OR ($card->rarity == "m" AND $card->available*2 < $card->available_foil)) {
-						$foilCounts[] = $card->available;
-						$foilValues[] = $card->available * $card->rate;
-						$card->available = 0;
-						$card->rate = 0;
-						$card->minprice = 0;
-					}
-					$card->rate_foil = round(array_sum($foilValues)/array_sum($foilCounts),2);
-					$card->available_foil = array_sum($foilCounts);
-					if($minprice == 0 OR $minprice > $card->rate_foil) $minprice = $card->rate_foil;
-					$card->minprice_foil = $minprice;
+          if(array_sum($foilCounts) > 0) {
+            foreach($foilValues as $index=>$value) {
+              if(($value/$foilCounts[$index]) > 3*array_sum($foilValues)/array_sum($foilCounts)) {
+                $foilValues[$index] = 0;
+                $foilCounts[$index] = 0;
+              }
+            }
+            // mehr Foils als non-Foils? Muss eine Foil-Only Karte sein
+            if(($card->rarity == "s" AND $card->available < $card->available_foil)
+            OR ($card->rarity == "r" AND $card->available*2 < $card->available_foil)
+            OR ($card->rarity == "m" AND $card->available*2 < $card->available_foil)) {
+              $foilCounts[] = $card->available;
+              $foilValues[] = $card->available * $card->rate;
+              $card->available = 0;
+              $card->rate = 0;
+              $card->minprice = 0;
+            }
+            $card->rate_foil = round(array_sum($foilValues)/array_sum($foilCounts),2);
+            $card->available_foil = array_sum($foilCounts);
+            if($minprice == 0 OR $minprice > $card->rate_foil) $minprice = $card->rate_foil;
+            $card->minprice_foil = $minprice;
+          }
 				}
 
 				$sql = "UPDATE cards SET ".

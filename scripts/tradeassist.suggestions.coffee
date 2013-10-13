@@ -1,6 +1,6 @@
 class TradeAssistSuggestions extends TradeAssistBase
   # Konstruktor für die Suggestions-Klasse */
-  constructor: (inputElement) ->
+  constructor: (inputElement, @tradeAssist) ->
 	  @inputElement = $(inputElement)
 	  @container = $('<ul class="suggestions"></ul>')
 	  @events = {}
@@ -35,8 +35,14 @@ class TradeAssistSuggestions extends TradeAssistBase
           realname = card.getName()
         line.append $("<span class='name'>#{displayname}</span>")
         line.append $("<span class='name_real'>(#{realname})</span>") if realname isnt ""
-        line.append $("<img class='thumbnail' src='#{card.getImage()}' title='#{card.getName()}' alt='#{card.getName()}'/>")
-        line.prepend $("<img class='edition' alt='#{card.getEdition(yes)}' title='#{card.getEdition()}' src='#{card.getEditionImage()}'/>")
+        line.append $("<img class='thumbnail'/>").attr
+          src: card.getImage()
+          title: card.getName()
+          alt: card.getName()
+        line.prepend $("<img class='edition'/>").attr
+          src: card.getEditionImage()
+          title: card.getEdition()
+          alt: card.getEdition(yes)
         if card.getEditions().length > 1
           line.prepend $('<div class="arrow left">&larr;</div>').on 'click',(e) =>
             e.stopPropagation()
@@ -90,12 +96,11 @@ class TradeAssistSuggestions extends TradeAssistBase
   # Ändert die ausgewählte Edition einer Suggestion
   changeEdition: (line, right) ->
     if @isUp()
-      @inputElement.focus()
       line = $('li.active',@container) unless line?
       card = line.data('card')
       if card.getEditions().length > 1
         card.setEdition(right)
-        $('.thumbnail',line).attr 'src', card.getImage()
+        $('.thumbnail',line).attr 'src', card.getImage() unless @tradeAssist.isMobile
         $('.edition',line).attr
           alt: card.getEdition(true)
           title: card.getEdition()

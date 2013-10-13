@@ -8,14 +8,15 @@ class TradeAssistCardInterface extends TradeAssistBase
     @lastSuggest = ""
 
     @counter = new TradeAssistValueCounter sideContainer.find('.currentvalue'), @tradeAssist
-    @counter.addEvent 'propose',(value,factor) =>
-      window.clearTimeout(@proposeTimer) if @proposeTimer
-      @proposeTimer = window.setTimeout (=> @proposeCard value, factor), 250
+    unless @tradeAssist.isMobile
+      @counter.addEvent 'propose',(value,factor) =>
+        window.clearTimeout(@proposeTimer) if @proposeTimer
+        @proposeTimer = window.setTimeout (=> @proposeCard value, factor), 250
 
-    @cardlist = new TradeAssistCardList sideContainer.find('.cardlist_container')
+    @cardlist = new TradeAssistCardList sideContainer.find('.cardlist_container'), @tradeAssist
     @cardlist.addEvent 'valuechange', (value) => @counter.add value
 
-    @suggestions = new TradeAssistSuggestions @input
+    @suggestions = new TradeAssistSuggestions @input, @tradeAssist
     @suggestions.addEvent 'click', (card) =>
       @cardlist.addCard card.clone()
       @suggestions.hide()
@@ -25,8 +26,6 @@ class TradeAssistCardInterface extends TradeAssistBase
     # Option Binds
     @input.on
       keyup: (e) => @inputKeyEvent e.which
-      blur:      => @input.addClass('inactive').val('enter cardname') if @input.val() is ""
-      focus:     => @input.removeClass('inactive').val('') if @input.hasClass 'inactive'
 
   # Löst bei Tastatur-Eingabe die entsprechende Suggestion-Funktion aus
   inputKeyEvent: (key) ->
@@ -85,9 +84,9 @@ class TradeAssistCardInterface extends TradeAssistBase
                 display: 'none'
               .appendTo('body').fadeIn()
             mouseleave: -> $('#fullcard').stop().fadeOut 500, -> $(@).remove()
-          @propose.append "<img class='rarity #{card.getRarity()}' src='#{@defaultImg}' alt=''/>"
-          @propose.append "<img class='edition' src='#{card.getEditionImage()}' alt='#{card.getEdition(true)}' title='#{card.getEdition(false)}'/>"
-          @propose.append "<div class='name'>#{card.getName('en',40)}</div>"
+          @propose.append "<img class='rarity #{card.getRarity()}' src='"+@defaultImg+"' alt=''/>"
+          @propose.append "<img class='edition' src='"+card.getEditionImage()+"' alt='#{card.getEdition(true)}' title='#{card.getEdition(false)}'/>"
+          @propose.append "<div class='name'>#{card.getName('en')}</div>"
           @propose.on 'click',=>
             @cardlist.addCard card
             @propose.off('click').removeClass 'show'

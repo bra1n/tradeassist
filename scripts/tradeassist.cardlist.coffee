@@ -1,6 +1,6 @@
 class TradeAssistCardList extends TradeAssistBase
   # Konstruktor für die Kartenlisten-Klasse
-  constructor: (cardlistElement) ->
+  constructor: (cardlistElement, @tradeAssist) ->
     @cards = []
     @events = {}
     self = @
@@ -69,7 +69,7 @@ class TradeAssistCardList extends TradeAssistBase
   updateCounter: ->
     counter = 0
     $.each @cards, (index,card) -> counter += card.data('card').getCount()
-    @sortElements.find('.cards').html "<strong>"+counter+"</strong> card"+(counter == 1 ? "":"s")
+    @sortElements.find('.cards').html "<strong>"+counter+"</strong> card"+(if counter is 1 then "" else "s")
     @sortElements.slideDown() if counter
     @sortElements.slideUp() unless counter
     @
@@ -97,6 +97,7 @@ class TradeAssistCardList extends TradeAssistBase
   # Generiert ein Karten-Template
   generateCardTemplate: (card) ->
     # todo make template
+    self = @
     cardContainer  = $ '<li class="card"></li>'
     rightContainer = $ '<div class="right"></div>'
     rightContainer.append('<span class="count">'+card.getCount()+'x</span><span class="rate'+(if card.getIsFoil() then ' foil' else'')+(if card.getIsMinimum() then ' min' else '')+'"></span>')
@@ -131,6 +132,7 @@ class TradeAssistCardList extends TradeAssistBase
     cardContainer.append rightContainer
     cardContainer.append $('<a href="'+card.getMKMLink()+'" target="_blank"><img class="thumbnail" alt="'+card.getName()+'" title="'+card.getName()+'" src="'+card.getImage()+'"/></a>').on
       mouseenter: ->
+        return if self.tradeAssist.isMobile
         el = $(@).find '.thumbnail'
         $('#fullcard').stop().remove()
         el.clone().attr('id','fullcard').css(el.offset()).css(
@@ -139,7 +141,7 @@ class TradeAssistCardList extends TradeAssistBase
           display:'none'
         ).appendTo('body').fadeIn()
       mouseleave: -> $('#fullcard').stop().fadeOut 500, -> $(@).remove()
-    cardContainer.append('<div class="name">'+card.getName("en",60)+'</div>').data 'card', card
+    cardContainer.append('<div class="name">'+card.getName("en")+'</div>').data 'card', card
     if card.getRate() >= 0
       @handleValueChange cardContainer, card.getRate()
     else

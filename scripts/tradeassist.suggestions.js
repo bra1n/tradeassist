@@ -7,7 +7,8 @@
   TradeAssistSuggestions = (function(_super) {
     __extends(TradeAssistSuggestions, _super);
 
-    function TradeAssistSuggestions(inputElement) {
+    function TradeAssistSuggestions(inputElement, tradeAssist) {
+      this.tradeAssist = tradeAssist;
       this.inputElement = $(inputElement);
       this.container = $('<ul class="suggestions"></ul>');
       this.events = {};
@@ -61,8 +62,16 @@
           if (realname !== "") {
             line.append($("<span class='name_real'>(" + realname + ")</span>"));
           }
-          line.append($("<img class='thumbnail' src='" + (card.getImage()) + "' title='" + (card.getName()) + "' alt='" + (card.getName()) + "'/>"));
-          line.prepend($("<img class='edition' alt='" + (card.getEdition(true)) + "' title='" + (card.getEdition()) + "' src='" + (card.getEditionImage()) + "'/>"));
+          line.append($("<img class='thumbnail'/>").attr({
+            src: card.getImage(),
+            title: card.getName(),
+            alt: card.getName()
+          }));
+          line.prepend($("<img class='edition'/>").attr({
+            src: card.getEditionImage(),
+            title: card.getEdition(),
+            alt: card.getEdition(true)
+          }));
           if (card.getEditions().length > 1) {
             line.prepend($('<div class="arrow left">&larr;</div>').on('click', function(e) {
               e.stopPropagation();
@@ -146,14 +155,15 @@
     TradeAssistSuggestions.prototype.changeEdition = function(line, right) {
       var card;
       if (this.isUp()) {
-        this.inputElement.focus();
         if (line == null) {
           line = $('li.active', this.container);
         }
         card = line.data('card');
         if (card.getEditions().length > 1) {
           card.setEdition(right);
-          $('.thumbnail', line).attr('src', card.getImage());
+          if (!this.tradeAssist.isMobile) {
+            $('.thumbnail', line).attr('src', card.getImage());
+          }
           return $('.edition', line).attr({
             alt: card.getEdition(true),
             title: card.getEdition(),

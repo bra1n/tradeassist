@@ -5,6 +5,7 @@
 	  xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta name="viewport" content="width=device-width" />
 		<title>Magic Trade Assist</title>
         <link rel="stylesheet" type="text/css" href="/styles/tradeassist.css"/>
         <script src="/scripts/jquery.js" type="text/javascript"></script>
@@ -30,24 +31,15 @@
 				<div class="propose"></div>
 				<div class="cardlist_container"></div>
 				<div class="input">
-					<input type="text" name="cardname" tabindex="1" autocomplete="off"
-				           class="input_cardname inactive" value="enter cardname"/>
+					<input type="text" name="cardname" tabindex="1" autocomplete="off" class="input_cardname" placeholder="enter cardname"/>
 				</div>
 			</div>
-			<div id="right">
+			<div id="right" class="inactive">
 				<div class="propose"></div>
 				<div class="counter"><span class="currentvalue">0,00</span></div>
 				<div class="cardlist_container"></div>
 				<div class="input">
-					<input type="text" name="cardname" tabindex="2" autocomplete="off"
-				           class="input_cardname inactive" value="enter cardname"/>
-				</div>
-			</div>
-			<br style="clear:both"/>
-			<div id="popup">
-				<div class="window">
-					<h1></h1>
-					<p></p>
+					<input type="text" name="cardname" tabindex="2" autocomplete="off" class="input_cardname" placeholder="enter cardname"/>
 				</div>
 			</div>
 		</div>
@@ -55,6 +47,9 @@
 			<a href="http://tradeassi.st"><img src="/images/logo.png" alt="MagicTradeAssist"/></a><br/>
 			MagicTradeAssist v2.0 &mdash; steffen[at]mnt[dot]me
 		</div>
+    <div id="popup">
+      <div class="window"><h1></h1><p></p></div>
+    </div>
 		<div id="controlpanel">
 			<div id="controlicons">
 				<span class="save">Save</span>

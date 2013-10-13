@@ -33,6 +33,7 @@ class TradeAssistBase
 class TradeAssist extends TradeAssistBase
   cardInterfaces: []
   requestRunning: false
+  isMobile: false
 
   # load list if there is a hash
   # bind control icons and popup events
@@ -42,7 +43,12 @@ class TradeAssist extends TradeAssistBase
     if $('#controlicons').length
       $('#controlicons .save').on 'click', => @saveLists()
       $('#controlicons .price').on 'click', => @togglePrices()
+    # toggle left / right for mobile
+    $('#container > div').on 'click', '.counter', ->
+      $(@).closest('.inactive').removeClass('inactive').siblings('div').addClass('inactive')
+    # hide popups on click
     @popup = $('#popup').on('click','.window', -> $(@).stop().fadeOut -> $(@).remove()).find '.window'
+    @isMobile = $('#left').css('display') is 'block'
 
   # registers a cardInterface to the base class
   # and passes a reference to itself
@@ -79,7 +85,7 @@ class TradeAssist extends TradeAssistBase
       .text(if isMinimum then "Use Average Prices" else "Use Minimum Prices")
       .toggleClass "min", !isMinimum
     $.each @cardInterfaces, (index,element) -> element.cardlist.togglePrices isMinimum
-    @showPopup "Switched Prices", "The cards are now compared by <b>#{if isMinimum then "minimum" else "average"} prices</b>"
+    @showPopup "Switched Prices", "The cards are now compared by <em>#{if isMinimum then "minimum" else "average"} prices</em>"
 
   # shows a popup with title and text body
   showPopup: (title, body) ->

@@ -15,19 +15,21 @@
       this.propose = sideContainer.find('.propose');
       this.lastSuggest = "";
       this.counter = new TradeAssistValueCounter(sideContainer.find('.currentvalue'), this.tradeAssist);
-      this.counter.addEvent('propose', function(value, factor) {
-        if (_this.proposeTimer) {
-          window.clearTimeout(_this.proposeTimer);
-        }
-        return _this.proposeTimer = window.setTimeout((function() {
-          return _this.proposeCard(value, factor);
-        }), 250);
-      });
-      this.cardlist = new TradeAssistCardList(sideContainer.find('.cardlist_container'));
+      if (!this.tradeAssist.isMobile) {
+        this.counter.addEvent('propose', function(value, factor) {
+          if (_this.proposeTimer) {
+            window.clearTimeout(_this.proposeTimer);
+          }
+          return _this.proposeTimer = window.setTimeout((function() {
+            return _this.proposeCard(value, factor);
+          }), 250);
+        });
+      }
+      this.cardlist = new TradeAssistCardList(sideContainer.find('.cardlist_container'), this.tradeAssist);
       this.cardlist.addEvent('valuechange', function(value) {
         return _this.counter.add(value);
       });
-      this.suggestions = new TradeAssistSuggestions(this.input);
+      this.suggestions = new TradeAssistSuggestions(this.input, this.tradeAssist);
       this.suggestions.addEvent('click', function(card) {
         _this.cardlist.addCard(card.clone());
         _this.suggestions.hide();
@@ -37,16 +39,6 @@
       this.input.on({
         keyup: function(e) {
           return _this.inputKeyEvent(e.which);
-        },
-        blur: function() {
-          if (_this.input.val() === "") {
-            return _this.input.addClass('inactive').val('enter cardname');
-          }
-        },
-        focus: function() {
-          if (_this.input.hasClass('inactive')) {
-            return _this.input.removeClass('inactive').val('');
-          }
         }
       });
     }
@@ -132,9 +124,9 @@
                 });
               }
             }));
-            _this.propose.append("<img class='rarity " + (card.getRarity()) + "' src='" + _this.defaultImg + "' alt=''/>");
-            _this.propose.append("<img class='edition' src='" + (card.getEditionImage()) + "' alt='" + (card.getEdition(true)) + "' title='" + (card.getEdition(false)) + "'/>");
-            _this.propose.append("<div class='name'>" + (card.getName('en', 40)) + "</div>");
+            _this.propose.append(("<img class='rarity " + (card.getRarity()) + "' src='") + _this.defaultImg + "' alt=''/>");
+            _this.propose.append("<img class='edition' src='" + card.getEditionImage() + ("' alt='" + (card.getEdition(true)) + "' title='" + (card.getEdition(false)) + "'/>"));
+            _this.propose.append("<div class='name'>" + (card.getName('en')) + "</div>");
             _this.propose.on('click', function() {
               _this.cardlist.addCard(card);
               return _this.propose.off('click').removeClass('show');
