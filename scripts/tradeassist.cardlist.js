@@ -240,12 +240,13 @@
     };
 
     TradeAssistCardList.prototype.handleValueChange = function(cardContainer, value) {
-      var card;
+      var card,
+        _this = this;
       card = cardContainer.data('card');
       if (!(card.getCount() > 0)) {
         $.each(this.cards, function(index, c) {
           if (c === cardContainer) {
-            return this.cards.splice(index, 1);
+            return _this.cards.splice(index, 1);
           }
         });
         cardContainer.slideUp(500, function() {

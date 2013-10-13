@@ -373,6 +373,8 @@ ul.suggestions li.suggestion {
   cursor:pointer;
   line-height:24px;
   overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 ul.suggestions li.suggestion:last-child {
   border-bottom-width: 2px;

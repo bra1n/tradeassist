@@ -465,7 +465,9 @@ ul.suggestions li.suggestion {
   border-width: 0 2px 1px 2px;
   cursor: pointer;
   line-height: 24px;
-  overflow: hidden; }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
 
 ul.suggestions li.suggestion:last-child {
   border-bottom-width: 2px;
@@ -568,3 +570,5 @@ ul.suggestions li.suggestion.active img.thumbnail {
     #popup .window p {
       text-align: left;
       margin: 0; }
+
+/*# sourceMappingURL=tradeassist.css.map */

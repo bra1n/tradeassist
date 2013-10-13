@@ -141,17 +141,17 @@ class TradeAssistCardList extends TradeAssistBase
       mouseleave: -> $('#fullcard').stop().fadeOut 500, -> $(@).remove()
     cardContainer.append('<div class="name">'+card.getName("en",60)+'</div>').data 'card', card
     if card.getRate() >= 0
-      @handleValueChange(cardContainer, card.getRate())
+      @handleValueChange cardContainer, card.getRate()
     else
-      rightContainer.find('span.rate').addClass('loader')
+      rightContainer.find('span.rate').addClass 'loader'
     cardContainer
 
   # Handhabt die Wertveränderung einer Karte
   handleValueChange: (cardContainer,value) ->
     card = cardContainer.data('card')
     unless card.getCount() > 0
-      $.each @cards,(index,c) -> @cards.splice(index,1) if c is cardContainer
-      cardContainer.slideUp 500,-> $(@).remove()
+      $.each @cards,(index,c) => @cards.splice(index,1) if c is cardContainer
+      cardContainer.slideUp 500, -> $(@).remove()
     else
       # Wert
       if card.getRate() < 0
@@ -174,4 +174,5 @@ class TradeAssistCardList extends TradeAssistBase
     @sort 'rate', @sortElements.find('.active').hasClass('down') if @sortElements.find('.active').text() is "price"
     @fireEvent "valuechange", [value]
 
+# hack until it is all one big coffee file
 window.TradeAssistCardList = TradeAssistCardList
