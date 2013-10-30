@@ -371,14 +371,14 @@ function getOffersById($id, $page = "") {
 				$isAltered = count($xml->xpath("//img[@alt='altered']")) > 0 ? 1:0;
 				$isFoil = count($xml->xpath("//img[@alt='foil']")) > 0 ? 1:0;
 				$isPlayset = count($xml->xpath("//img[@alt='playset']")) > 0 ? 1:0;
-				$price = floatval(str_replace(",",".",strval($xml->xpath("//td[6]")[0])));
-				$count = intval($xml->xpath("//td[7]")[0]);
-				$condition = array_search(strval($xml->xpath("//td[3]//img//attribute::alt")[0]),$gradings);
-				$country = strval($xml->xpath("//td[1]/span/span[2]//attribute::onmouseover")[0]);
-				$seller = strval($xml->xpath("//td[1]/span/span[1]/a")[0]);
-				$rating = substr(strval($xml->xpath("//td[1]/span/span[1]")[0]),2,-1);
-				$level = array_search(strval($xml->xpath("//td[1]/span/span[3]//attribute::alt")[0]),$ratings);
-				$language = array_search(preg_replace('/^.*?background-position: ?-?(\d+)px.*?$/i',"$1",strval($xml->xpath("//td[2]//span//attribute::style")[0])),$languages);
+				$price = floatval(str_replace(",",".",strval(reset($xml->xpath("//td[6]")))));
+				$count = intval(reset($xml->xpath("//td[7]")));
+				$condition = array_search(strval(reset($xml->xpath("//td[3]//img//attribute::alt"))),$gradings);
+				$country = strval(reset($xml->xpath("//td[1]/span/span[2]//attribute::onmouseover")));
+				$seller = strval(reset($xml->xpath("//td[1]/span/span[1]/a")));
+				$rating = substr(strval(reset($xml->xpath("//td[1]/span/span[1]"))),2,-1);
+				$level = array_search(strval(reset($xml->xpath("//td[1]/span/span[3]//attribute::alt"))),$ratings);
+				$language = array_search(preg_replace('/^.*?background-position: ?-?(\d+)px.*?$/i',"$1",strval(reset($xml->xpath("//td[2]//span//attribute::style")))),$languages);
 				$speed = count($xml->xpath("//td[1]/span//img[@alt='fast']"));
 				$speed = count($xml->xpath("//td[1]/span//img[@alt='vfast']")) ? 2:$speed;
                 // no seller? no offer!
