@@ -272,8 +272,7 @@ ul.cardlist {
     border-right: 2px solid black;
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
-    box-shadow: 0 2px 6px #222;
-    overflow: hidden; }
+    box-shadow: 0 2px 6px #222; }
     ul.cardlist li.card:first-child {
       border-top: 2px solid black; }
     ul.cardlist li.card:last-child {

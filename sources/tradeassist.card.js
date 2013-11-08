@@ -32,6 +32,7 @@ TradeAssistCard = (function(_super) {
       this.count = objects.count || 1;
       this.isFoil = objects.foil || false;
       this.events = {};
+      this.isMinimum = TradeAssistCard.prototype.isMinimum;
       return this;
     }
   }

@@ -20,6 +20,7 @@ class TradeAssistCard extends TradeAssistBase
       @count = objects.count or 1
       @isFoil = objects.foil or false
       @events = {}
+      @isMinimum = TradeAssistCard.prototype.isMinimum
       return @
 
   # Gibt den Namen in der ausgewählten Sprache zurück (momentan nur "en" und "de")
