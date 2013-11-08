@@ -48,13 +48,7 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 					if($card->error) {
 						echo '{"error":"'.$card->error.'"}';
 					} else {
-						echo json_encode(array(
-							"rate"=>$card->rate,
-							"rate_foil"=>$card->rate_foil,
-							"minprice"=>$card->minprice,
-							"minprice_foil"=>$card->minprice_foil,
-							"timestamp"=>date("Y-m-d H:i:s")
-						));
+						echo json_encode($card);
 					}
 				} else {
 					echo json_encode($row);
