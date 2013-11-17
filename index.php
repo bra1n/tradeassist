@@ -9,7 +9,10 @@
   <title>Magic Trade Assist</title>
   <script src="/scripts/jquery.js" type="text/javascript"></script>
   <script src="/scripts/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
-<?php if(isset($_SERVER['HTTP_HOST']) AND preg_match('/'.HOSTNAME.'$/i',$_SERVER['HTTP_HOST'])) { ?>
+<?php
+  require "config.php";
+  if(isset($_SERVER['HTTP_HOST']) AND preg_match('/'.HOSTNAME.'$/i',$_SERVER['HTTP_HOST'])) {
+?>
   <script src="/scripts/tradeassist.js" type="text/javascript"></script>
   <link rel="stylesheet" type="text/css" href="/styles/tradeassist.css"/>
 <? } else { ?>

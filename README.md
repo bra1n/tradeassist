@@ -61,9 +61,9 @@ Filling these tables with meaningful data is left as an exercise to the reader.
 
 ## Developing
 In order to easily make changes to the JS / CSS files, you need to run Coffeescript and SCSS/SASS so that they will
-automatically compile the `.coffee` and `.scss` files in `/sources`. When not server on the configured `HOSTNAME`, the
-main page will try to load all assets from there, allowing you to easily modify the code and reload the page without
-having to redeploy every time.
+automatically compile the `.coffee` and `.scss` files in `sources`. When the server is not running on the configured `HOSTNAME`,
+the main page will try to load all assets from that folder, allowing you to easily modify the code and reload the page without
+having to redeploy every time you change something.
 
 ### SASS
 Run `sass --sourcemap --watch sources` in the project root folder.
