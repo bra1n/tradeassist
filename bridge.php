@@ -154,7 +154,7 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 		break;
 	/* Kartenangebote listen */
 		case 'offers':
-			$offers = getOffersById(intval($arg));
+			$offers = getOffersByIdFromMKM(intval($arg));
 			echo json_encode($offers);
 		break;
 	}

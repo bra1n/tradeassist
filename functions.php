@@ -136,7 +136,8 @@ function updatePricesByIdFromMKM($id) {
       //minpreis
       if($minprice == 0) {
         //if($offer["country"] != "Deutschland") continue; // nur DE Verkäufer
-        //if(!in_array($offer["level"],array(3,4,5))) continue; // nur gute, sehr gute und herausragende Verkäufer
+        if($offer["warning"]>0) continue; // keine Verkäufer mit Warnings
+        if($offer["level"]>2) continue; // nur gute, sehr gute und herausragende Verkäufer
         if(!in_array($offer["language"],array(1,3))) continue; // nur deutsche und englische Karten
         if($offer["grading"] == 5 && $index <= count($offers)*0.1) continue; // in den ersten 10% der Angebote nur NM / MT Karten berücksichtigen
         $minprice = $offer["price"];
@@ -300,7 +301,6 @@ function getCardsByIds($cardIds, $fillPrintings = false) {
 
 function getOffersByIdFromMKM($id) {
 	$gradings = array("","PO","PL","LP","GD","EX","NM","MT");
-	$ratings = array("E-NULL","SS-5","SS-4","SS-3","SS-2","SS-1");
 	$offers = array();
 	$id = intval($id);
 
@@ -308,12 +308,19 @@ function getOffersByIdFromMKM($id) {
   if($xml) {
     $xml = simplexml_load_string($xml);
     foreach($xml as $article) $offers[] = $article;
-    $x = 0;
-    while(count($xml->article) == 100 AND strpos($http_response_header[0],"206 Partial Content") !== false) {
-      $xml = @file_get_contents(MKMAPI."articles/$id/".(count($offers)+1));
-      $xml = simplexml_load_string($xml);
-      if(!$xml OR $x == 10) break;
-      foreach($xml as $article) $offers[] = $article;
+    if(strpos($http_response_header[0],"206 Partial Content") !== false) {
+      $total = 0;
+      foreach($http_response_header as $headerline) {
+        if(preg_match("~Range: \d+-\d+/(\d+)~i",$headerline,$match)) {
+          $total = $match[1];
+          break;
+        }
+      }
+      for($x = 101;$x <= $total; $x+=100) {
+        $xml = @file_get_contents(MKMAPI."articles/$id/$x");
+        $xml = simplexml_load_string($xml);
+        foreach($xml as $article) $offers[] = $article;
+      }
     }
   }
   foreach($offers as $index=>$offer) {
@@ -321,15 +328,15 @@ function getOffersByIdFromMKM($id) {
     $isFoil = $offer->isFoil == "true" ? 1:0;
     $isPlayset = $offer->isPlayset == "true" ? 1:0;
     $price = floatval($offer->price);
-    $count = 1; // todo: currently not supported by the API, so we assume it is always 1
+    $count = intval($offer->count);
     $condition = array_search($offer->condition, $gradings);
-    $language = intval($offer->idLanguage);
-    // todo: replace these with real data or throw them out
-    $country = "";
-    $seller = "";
-    $rating = 0;
-    $level = 0;
-    $speed = 0;
+    $language = intval($offer->language->idLanguage);
+    $country = strval($offer->seller->country);
+    $seller = strval($offer->seller->username);
+    $level = intval($offer->seller->country); # 0 = best, 4+ = worst
+    $warning = intval($offer->seller->riskGroup); # 0 = no warning, 1 = new seller, 2 = big warning
+    $rating = 0; # todo replace with real value once available
+    $speed = 0; # todo replace with real value once available
     if($isPlayset) {
       $count = $count * 4;
       $price = $price / 4;
@@ -346,7 +353,8 @@ function getOffersByIdFromMKM($id) {
       "rating" => $rating,
       "speed" => $speed,
       "level" => $level,
-      "language" => $language
+      "language" => $language,
+      "warning" => $warning
     );
   }
 	return $offers;
