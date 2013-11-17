@@ -3,3 +3,6 @@ config.php
 leech.php
 .idea
 .DS_Store
+sources/*.js
+sources/*.map
+sources/*.css
