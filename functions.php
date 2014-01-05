@@ -335,7 +335,7 @@ function getOffersByIdFromMKM($id) {
     $language = intval($offer->language->idLanguage);
     $country = strval($offer->seller->country);
     $seller = strval($offer->seller->username);
-    $level = intval($offer->seller->country); # 0 = best, 4+ = worst
+    $level = intval($offer->seller->reputation); # 0 = best, 4+ = worst
     $warning = intval($offer->seller->riskGroup); # 0 = no warning, 1 = new seller, 2 = big warning
     $rating = 0; # todo replace with real value once available
     $speed = 0; # todo replace with real value once available
