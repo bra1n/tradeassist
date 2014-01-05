@@ -228,10 +228,11 @@ function getCardByIdFromMKM($id) {
   else {
     $xml = simplexml_load_string($xml);
     if(isset($xml->product) AND intval($xml->product->category->idCategory) == 1) {
-      $card->name = str_replace("Æ","AE",$xml->product->name);
-      $card->name_de =  str_replace("Æ","AE",$xml->product->localizations->localizedName[2]->localizedName);
+      $card->name = str_replace("Æ","AE",$xml->product->name[0]->productName);
+      $card->name_de =  str_replace("Æ","AE",$xml->product->name[2]->productName);
       $card->rarity = strtolower(substr($xml->product->rarity,0,1));
       $card->edition = strval($xml->product->expansion);
+      $card->img_url = str_replace("./img/cards/","",$xml->product->image);
       // get edition
       $sql = "SELECT id FROM editions WHERE edition='".mysql_real_escape_string($card->edition)."' OR mkm_name='".mysql_real_escape_string($card->edition)."' LIMIT 1";
       $result = mysql_query($sql);
@@ -242,15 +243,16 @@ function getCardByIdFromMKM($id) {
           "id=".$id.", ".
           "name='".mysql_real_escape_string($card->name)."', ".
           "name_de='".mysql_real_escape_string($card->name_de)."', ".
-          //"img_url='".mysql_real_escape_string($card->img_url)."', ". // todo: add when it becomes available again
+          "img_url='".mysql_real_escape_string($card->img_url)."', ".
           "edition=".$row['id'].", ".
+          "timestamp_mkm=0, ".
           "rarity='".mysql_real_escape_string($card->rarity)."'";
         mysql_query($sql) or die(mysql_error()."\n".$sql."\n");
       } else {
         $card->error = "unrecognized edition ".$card->edition." (".$card->name.")";
       }
     } else {
-      $card->error = $xml->product->name." (".$xml->product->category->categoryName.") is not a magic card";
+      $card->error = $xml->product->name[0]->productName." (".$xml->product->category->categoryName.") is not a magic card";
     }
   }
   return $card;
