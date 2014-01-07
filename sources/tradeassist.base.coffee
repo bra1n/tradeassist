@@ -43,7 +43,7 @@ class TradeAssist extends TradeAssistBase
   constructor: ->
     @region = "eu"
     # todo: uncomment to enable region preselection
-    @region = "us" if (navigator.language or navigator.userLanguage or "").match(RegExp('^en-us','i'))?
+    # @region = "us" if (navigator.language or navigator.userLanguage or "").match(RegExp('^en-us','i'))?
     $('body').addClass 'region-'+@region
     @loadLists window.location.hash.substr(1) if window.location.hash isnt ""
     # bind hooks
