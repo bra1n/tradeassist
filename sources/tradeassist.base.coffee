@@ -12,6 +12,7 @@ class TradeAssistBase
   url:              'bridge.php'
   events:           {}
   test:             ''
+  tradeAssist:      null
   # Fügt einen Event-Listener hinzu
   addEvent: (type, fn) ->
     if type? and fn?
@@ -34,15 +35,21 @@ class TradeAssist extends TradeAssistBase
   cardInterfaces: []
   requestRunning: false
   isMobile: false
+  isMinimum: false
 
+  # determine user region
   # load list if there is a hash
   # bind control icons and popup events
   constructor: ->
+    @region = "eu"
+#    @region = "us" if (navigator.language or navigator.userLanguage or "").match(RegExp('^en-us','i'))?
+    $('body').addClass 'region-'+@region
     @loadLists window.location.hash.substr(1) if window.location.hash isnt ""
     # bind hooks
     if $('#controlicons').length
       $('#controlicons .save').on 'click', => @saveLists()
       $('#controlicons .price').on 'click', => @togglePrices()
+      $('#controlicons .region').on 'click', => @toggleRegion()
     # toggle left / right for mobile
     $('#container > div').on 'click', '.counter', ->
       $(@).closest('.inactive').removeClass('inactive').siblings('div').addClass('inactive')
@@ -80,12 +87,18 @@ class TradeAssist extends TradeAssistBase
 
   # switch between average and min prices
   togglePrices: ->
-    isMinimum = TradeAssistCard.prototype.isMinimum = !TradeAssistCard.prototype.isMinimum;
-    $('#controlicons .price')
-      .text(if isMinimum then "Use Average Prices" else "Use Minimum Prices")
-      .toggleClass "min", !isMinimum
-    $.each @cardInterfaces, (index,element) -> element.cardlist.togglePrices isMinimum
-    @showPopup "Switched Prices", "The cards are now compared by <em>#{if isMinimum then "minimum" else "average"} prices</em>"
+    @isMinimum = !@isMinimum
+    $('body').toggleClass 'price-min', @isMinimum
+    $.each @cardInterfaces, (index,element) -> element.cardlist.updatePrices()
+    @showPopup "Switched Prices", "The cards are now compared by <em>#{if @isMinimum then "minimum" else "average"} prices</em>"
+
+  # switch between EU and US region
+  toggleRegion: ->
+    $('body').removeClass 'region-'+@region
+    @region = if @region is "us" then "eu" else "us"
+    $('body').addClass 'region-'+@region
+    $.each @cardInterfaces, (index,element) -> element.cardlist.reset()
+    @showPopup "Switched Region", "Changed the price region to <em>#{@region.toUpperCase()}</em>"
 
   # shows a popup with title and text body
   showPopup: (title, body) ->

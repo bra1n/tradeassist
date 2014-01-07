@@ -1,9 +1,8 @@
 class TradeAssistCard extends TradeAssistBase
-  isMinimum: false
   # Konstruktor für die Erzeugung von Card-Objekten aus JSON-Objekten
-  constructor: (objects) ->
+  constructor: (objects, @tradeAssist) ->
     if $.isArray(objects)
-      $.each objects, (index,object) => objects[index] = new TradeAssistCard(object)
+      $.each objects, (index,object) => objects[index] = new TradeAssistCard(object, @tradeAssist)
       return objects
     else
       @name =
@@ -20,7 +19,6 @@ class TradeAssistCard extends TradeAssistBase
       @count = objects.count or 1
       @isFoil = objects.foil or false
       @events = {}
-      @isMinimum = TradeAssistCard.prototype.isMinimum
       return @
 
   # Gibt den Namen in der ausgewählten Sprache zurück (momentan nur "en" und "de")
@@ -52,13 +50,9 @@ class TradeAssistCard extends TradeAssistBase
       @isFoil = isFoil
       @fireEvent "valuechange", [@getCount()*(@getRate()-oldRate)] if oldRate >= 0 and @getRate() >= 0
 
-  getIsMinimum: -> @isMinimum
-
-  setIsMinimum: (isMinimum) ->
-    if isMinimum != @isMinimum
-      oldRate = @getRate()
-      @isMinimum = isMinimum
-      @fireEvent "valuechange", [@getCount()*(@getRate()-oldRate)] if oldRate >= 0 and @getRate() >= 0
+  updateRate: ->
+    oldRate = @getRate()
+    @fireEvent "valuechange", [@getCount()*(@getRate()-oldRate)] if oldRate >= 0 and @getRate() >= 0
 
   getSpecial: -> @rates.special
 
@@ -120,7 +114,7 @@ class TradeAssistCard extends TradeAssistBase
       if @rates.special isnt @getId()
         id = @getId()
         @rates.special = id
-        $.getJSON @url, {action:'value',arg:id}, (response) =>
+        $.getJSON @url, {action:'value',arg:id,region:@tradeAssist.region}, (response) =>
           if !response.error and @getId() is id
             @rates.normal = parseFloat response["rate"]
             @rates.foil = parseFloat response["rate_foil"]
@@ -136,11 +130,19 @@ class TradeAssistCard extends TradeAssistBase
             else
               @rates.special = ""
             @fireEvent "valuechange", [@getRate()*@getCount()]
+          else
+            @tradeAssist.showPopup "Error loading price", response.error
+            @rates.normal = 0
+            @rates.foil = 0
+            @rates.min = 0
+            @rates.min_foil = 0
+            @rates.date = new Date().getTime()
+            @fireEvent "valuechange", [0]
       return -1
     else if @getIsFoil()
-      return if @getIsMinimum() then @rates.min_foil else @rates.foil
+      return if @tradeAssist.isMinimum then @rates.min_foil else @rates.foil
     else
-      return if @getIsMinimum() then @rates.min else @rates.normal
+      return if @tradeAssist.isMinimum then @rates.min else @rates.normal
 
   # Gibt das Datum der letzten Wertermittlung zurück
   getRateTimestamp: -> @rates.date or null
@@ -150,7 +152,7 @@ class TradeAssistCard extends TradeAssistBase
 
   # Erzeugt eine Kopie der Karte und gibt sie zurück
   clone: ->
-    clone = new TradeAssistCard {}
-    cloneFields = ["name","printings","rates","count","isFoil","isMinimum"]
+    clone = new TradeAssistCard {}, @tradeAssist
+    cloneFields = ["name","printings","rates","count","isFoil"]
     clone[field] = @[field] for field in cloneFields
     clone

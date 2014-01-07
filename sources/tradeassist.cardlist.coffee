@@ -87,12 +87,12 @@ class TradeAssistCardList extends TradeAssistBase
   # Erzeugt aus einem Objekt eine Kartenliste
   importFromObject: (list) ->
     if list.cards
-      $.each list.cards, (index,card) => @addCard new TradeAssistCard(card)
+      $.each list.cards, (index,card) => @addCard new TradeAssistCard(card, @tradeAssist)
       @sort @sortElements.find('.active').text(),@sortElements.find('.active').hasClass('down')
 
   # Setzt bei allen Karten den Minimum/Durchschnittspreis-Modus
-  togglePrices: (useMinimumPrices) ->
-    $.each @cards,(index,card) -> card.data('card').setIsMinimum useMinimumPrices
+  updatePrices: ->
+    $.each @cards,(index,card) -> card.data('card').updateRate()
 
   # Generiert ein Karten-Template
   generateCardTemplate: (card) ->
@@ -100,7 +100,7 @@ class TradeAssistCardList extends TradeAssistBase
     self = @
     cardContainer  = $ '<li class="card"></li>'
     rightContainer = $ '<div class="right"></div>'
-    rightContainer.append('<span class="count">'+card.getCount()+'x</span><span class="rate'+(if card.getIsFoil() then ' foil' else'')+(if card.getIsMinimum() then ' min' else '')+'"></span>')
+    rightContainer.append('<span class="count">'+card.getCount()+'x</span><span class="rate'+(if card.getIsFoil() then ' foil' else'')+'"></span>')
     rightContainer.append($('<button class="plus">+</button>').on 'click', -> card.setCount(card.getCount()+1))
     rightContainer.append('<img class="rarity '+card.getRarity()+'" src="'+@defaultImg+'" alt=""/><br/>')
     rightContainer.append($('<img class="edition" alt="'+card.getEdition(true)+'" title="'+card.getEdition(false)+'" src="'+card.getEditionImage()+'"/>').on 'click', ->
@@ -160,7 +160,7 @@ class TradeAssistCardList extends TradeAssistBase
         cardContainer.find('span.rate').addClass('loader').text("").attr 'title', card.getRateTimestamp()
       else
         cardContainer.find('span.rate').removeClass('loader').text(card.getRate().toFixed(2).replace(/\./,',')).attr('title',card.getRateTimestamp())
-      cardContainer.find('span.rate').toggleClass('foil',card.getIsFoil()).toggleClass('min',card.getIsMinimum())
+      cardContainer.find('span.rate').toggleClass('foil',card.getIsFoil())
       cardContainer.find('span.count').text(card.getCount()+"x")
       switch card.getSpecial()
         when "onlyfoil"

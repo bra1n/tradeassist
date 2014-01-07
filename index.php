@@ -53,7 +53,7 @@
 </div>
 <div id="footer">
   <a href="http://tradeassi.st"><img src="/images/logo.png" alt="MagicTradeAssist"/></a><br/>
-  MagicTradeAssist v2.0 &mdash; steffen[at]mnt[dot]me
+  MagicTradeAssist v2.1 &mdash; steffen[at]mnt[dot]me
 </div>
 <div id="popup">
   <div class="window"><h1></h1><p></p></div>
@@ -61,7 +61,8 @@
 <div id="controlpanel">
   <div id="controlicons">
     <span class="save">Save</span>
-    <span class="price min">Use Minimum Price</span>
+    <span class="price">Prices</span>
+<!--    <span class="region">Region</span>-->
   </div>
 </div>
 </body>

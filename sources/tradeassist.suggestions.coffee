@@ -12,7 +12,7 @@ class TradeAssistSuggestions extends TradeAssistBase
       @xhr = $.getJSON @url, {action:'suggest', arg:name},(response) =>
         if name is @lastSuggest #aktueller Request
           if response?.cards.length > 0
-            @show new TradeAssistCard(response.cards)
+            @show new TradeAssistCard(response.cards, @tradeAssist)
           else
             @hide()
       @lastSuggest = name

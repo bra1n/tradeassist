@@ -66,11 +66,12 @@ class TradeAssistCardInterface extends TradeAssistBase
         action: 'propose'
         arg: parseFloat(value).toFixed(2)
         exclude: excludedIds.join(',')
-        minprice: TradeAssistCard.prototype.isMinimum
+        minprice: @tradeAssist.isMinimum
+        region: @tradeAssist.region
       , (response) =>
         if response
           # we have a proposed card
-          card = new TradeAssistCard response
+          card = new TradeAssistCard response, @tradeAssist
           @propose.off('click').empty()
           # thumbnail handling
           @propose.append $('<img class="thumbnail" src="'+card.getImage()+'" alt="" title="'+card.getName()+'"/>').on

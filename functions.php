@@ -19,7 +19,7 @@ date_default_timezone_set("Europe/Berlin");
  */
 function updateCardById($id, $source = "mkm") {
 	switch($source){
-		case "us": return getCardByIdFromMKM($id);
+		case "us": return updateCardByIDFromUS($id);
 		case "mkm":
 		default: return updatePricesByIdFromMKM($id);
 	}
@@ -32,7 +32,7 @@ function updateCardById($id, $source = "mkm") {
  * @return stdClass
  */
 function updateCardByIDFromUS($id) {
-	$result = mysql_query("SELECT c.*, e.id AS edition_id, e.edition, e.us_name, e.isregular FROM cards c LEFT JOIN editions e ON e.id = c.edition WHERE c.id = '".$id."' LIMIT 1") or die(mysql_error());
+	$result = mysql_query("SELECT c.*, e.edition, e.us_name AS edition_us, e.isregular FROM cards c LEFT JOIN editions e ON e.id = c.edition WHERE c.id = '".$id."' LIMIT 1") or die(mysql_error());
 	$card = (object) mysql_fetch_assoc($result);
 	mysql_free_result($result);
 	$card->error = "";
@@ -41,62 +41,40 @@ function updateCardByIDFromUS($id) {
 		return $card;
 	}
 	if($card->isregular AND !in_array($card->rarity,array("t"))) {
-		$edition = ($card->us_name=="" ? $card->edition : $card->us_name);
-		// namen säubern
-		$name = str_replace(
-			array("â","ú","û","á","í","ö","é","à",'"'), // keine Umlaute, keine Anführungszeichen
-			array("a","u","u","a","i","o","e","a",''),
-			trim(preg_replace('~\(Version (\d+)\)~','[Version $1]',$card->name))); // Versionen in eckigen Klammern
-		// sonderfälle
-		$name = str_replace(
-			array(") [Version 1]",") [Version 2]"),
-			array(" Left)"," Right)"),
-			$name
-		);
-//		$url = "http://www.mtgprice.com/CardPrice?s=".urlencode($edition)."&n=".urlencode($name);
-		$url = "http://magic.tcgplayer.com/db/price_guide.asp?setname=".urlencode($edition);
-		$cards = trim(@file_get_contents($url));
-        $pattern ='~<table width=600 cellpadding=0 cellspacing=0 border=1 align=left>\s*'.
-                  '<TR height=20><td width=200 align=left valign=center><font  class=default_7>'.
-                  '(.*?)</font></td></TR>\s*</table>~is';
-        if(preg_match($pattern,$cards,$matches) AND trim($matches[1])) {
-            // remove ugly spaces
-            $matches[1] = str_replace("&nbsp;","",$matches[1]);
-            // split columns
-            $matches[1] = preg_replace('~</font>(</center>)?</td><td width=\d+ align=(left|right|center) valign=center>(<center>)?<font  ?class=default_7>\$?~is','#col#',$matches[1]);
-            // split rows
-            $matches[1] = preg_replace('~</font>(</center>)?</td></TR><TR height=20><td width=200 align=left valign=center><font  class=default_7>~is','#row#',$matches[1]);
-            $cards = explode("#row#",$matches[1]);
-            // default error
-            $card->error = "card not found (".$card->name.")";
-            foreach($cards as $cardline) {
-                $cardline = explode("#col#",$cardline);
-                if(strtolower($cardline[0]) == strtolower($card->name)) {
-                    // the current card!
-                    $card->rate_us = floatval($cardline[6]);
-                    $card->minprice_us = floatval($cardline[7]);
-                    unset($card->error);
-                }
-                // insert all the new prices into the DB
-                $sql = "UPDATE cards SET ".
-                    "rate_us = '".floatval($cardline[6])."', ".
-                    "minprice_us = '".floatval($cardline[7])."', ".
-                    "timestamp_us = NOW() ".
-                    "WHERE edition = '".$card->edition_id."' AND name = '".mysql_real_escape_string($cardline[0])."'";
-//                mysql_query($sql);
-            }
-            print_r($cards);
-        } else {
-            $card->error = "unsupported edition (".$edition.")";
-        }
-        print_r($card); exit;
+    // use the US edition name if it's set
+    $edition = ($card->edition_us=="" ? $card->edition : $card->edition_us);
+    $name = ($card->name_us=="" ? $card->name : $card->name_us);
+    // namen säubern
+    $name = str_replace(
+      array("û","ö","é","à",'"'), // keine Umlaute, keine Anführungszeichen
+      array("u","o","e","a",''),
+      trim(preg_replace('~\(Version (\d+)\)~','[Version $1]',$name))); // Versionen in eckigen Klammern
+    // sonderfälle
+    $name = str_replace(
+      array(") [Version 1]",") [Version 2]"),
+      array(" Left)"," Right)"),
+      $name
+    );
+    $url = USAPI . "&s=".urlencode($edition)."&p=".urlencode($name);
+    $xml = trim(@file_get_contents($url));
+    if(!$xml || $xml == "Product not found.") $card->error = "Error loading price for ".$card->name." from ".$edition;
+    else {
+      $xml = simplexml_load_string($xml);
+      $card->rate_us = floatval($xml->product->avgprice);
+      $card->minprice_us = floatval($xml->product->lowprice);
+      $card->rate_foil_us = floatval($xml->product->foilavgprice);
+      // insert all the new prices into the DB
+      $sql = "UPDATE cards SET ".
+        "rate_us = '".$card->rate_us."', ".
+        "minprice_us = '".$card->minprice_us."', ".
+        "rate_foil_us = '".$card->rate_foil_us."', ".
+        "timestamp_us = NOW() ".
+        "WHERE id = '".$card->id."'";
+      mysql_query($sql);
+    }
 	} else {
-		$card->rate = 0;
-		$card->minprice = 0;
-		$card->error = "unsupported card (".$card->name.")";
+		$card->error = "The card (".$card->name.") is not supported in this region.";
 	}
-	$card->rate_foil = 0;
-	$card->minprice_foil = 0;
 	return $card;
 }
 
@@ -198,8 +176,6 @@ function updatePricesByIdFromMKM($id) {
   $card->timestamp = date("Y-m-d H:i:s");
 
   $sql = "UPDATE IGNORE cards SET ".
-    "available='".$card->available."', ".
-    "available_foil='".$card->available_foil."', ".
     "rate='".$card->rate."', ".
     "rate_foil='".$card->rate_foil."', ".
     "minprice='".$card->minprice."', ".

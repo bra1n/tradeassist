@@ -88,9 +88,15 @@ img#fullcard {
     .save { background:url(../images/save.png) left center no-repeat; }
     .load { background:url(../images/save.png) left center no-repeat; }
     .price { background:url(../images/coins_alot.png) no-repeat; }
-    .price.min { background:url(../images/coins_normal.png) no-repeat; }
+    .price:before { content: "Average "; }
   }
 }
+body.region-us #controlpanel #controlicons .region { background:url(../images/region-us.png) no-repeat; }
+body.region-us #controlpanel #controlicons .region:before { content:"US "; }
+body.region-eu #controlpanel #controlicons .region { background:url(../images/region-eu.png) no-repeat; }
+body.region-eu #controlpanel #controlicons .region:before { content: "EU "; }
+body.price-min #controlpanel #controlicons .price:before { content: "Minimum "; }
+body.price-min #controlpanel #controlicons .price { background:url(../images/coins_normal.png) no-repeat; }
 
 /* Propose */
 .propose {
@@ -151,15 +157,18 @@ div.counter {
     font-size:30px;
     font-weight:bold;
     line-height:100px;
-    &:after {
+    &:after,&:before {
       content: "€";
       font-size:20px;
       color:#999999;
       font-weight:bold;
       padding-left:3px;
     }
+    &:before { display:none; }
   }
 }
+body.region-us div.counter span.currentvalue:before { content:"$"; display:inline; }
+body.region-us div.counter span.currentvalue:after { display:none; }
 
 /* Cardlist */
 /*	Sort */
@@ -255,10 +264,10 @@ ul.cardlist {
     div.name.foil { font-weight:bold; text-shadow: 0 0 6px gold; }
     span { padding:5px 3px 0 0; }
     span.rate { font-weight: bold; }
-    span.rate:after { content:"€"; font-size: 12px; font-weight: normal; }
+    span.rate:after,span.rate:before { content:"€"; font-size: 12px; font-weight: normal; }
+    span.rate:before { display:none; }
     span.rate.loader { padding-left:20px; background:url(../images/loader.gif) 0 5px no-repeat; }
     span.rate.foil { text-shadow: 0 0 6px gold; font-weight:bold; }
-    span.rate.min { border-bottom:2px solid red; }
     img.edition { margin:-5px 3px 0 0; }
     img.edition.choice {
       cursor:pointer;
@@ -319,6 +328,9 @@ ul.cardlist {
     }
   }
 }
+body.region-us ul.cardlist li.card span.rate:before { content:"$"; display:inline; }
+body.region-us ul.cardlist li.card span.rate:after { display:none; }
+body.price-min ul.cardlist li.card span.rate { border-bottom:2px solid red; }
 
 /* Suggestions */
 input.input_cardname {
