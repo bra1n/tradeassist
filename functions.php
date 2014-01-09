@@ -46,8 +46,8 @@ function updateCardByIDFromUS($id) {
     $name = ($card->name_us=="" ? $card->name : $card->name_us);
     // namen säubern
     $name = str_replace(
-      array("û","ö",'"'), // keine Umlaute, keine Anführungszeichen
-      array("u","o",''),
+      array("û",'"'), // keine Umlaute, keine Anführungszeichen
+      array("u",''),
       trim(preg_replace('~\(Version (\d+)\)~','[Version $1]',$name))); // Versionen in eckigen Klammern
     // sonderfälle
     $name = str_replace(
