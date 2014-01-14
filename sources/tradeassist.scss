@@ -76,6 +76,7 @@ img#fullcard {
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     box-shadow: 0 0 6px #222222;
+    height: 100%;
     span {
       cursor:pointer;
       height:16px;
@@ -83,20 +84,22 @@ img#fullcard {
       display:inline-block;
       margin:4px;
       line-height: 16px;
+      background-position: left center;
+      background-repeat: no-repeat;
       &:hover { color:white; }
     }
-    .save { background:url(../images/save.png) left center no-repeat; }
-    .load { background:url(../images/save.png) left center no-repeat; }
-    .price { background:url(../images/coins_alot.png) no-repeat; }
+    .save { background-image:url(../images/save.png); }
+    .load { background-image:url(../images/save.png); }
+    .price { background-image:url(../images/coins_alot.png); }
     .price:before { content: "Average "; }
   }
 }
-body.region-us #controlpanel #controlicons .region { background:url(../images/region-us.png) no-repeat; }
+body.region-us #controlpanel #controlicons .region { background-image:url(../images/region-us.png); }
 body.region-us #controlpanel #controlicons .region:before { content:"US "; }
-body.region-eu #controlpanel #controlicons .region { background:url(../images/region-eu.png) no-repeat; }
+body.region-eu #controlpanel #controlicons .region { background-image:url(../images/region-eu.png); }
 body.region-eu #controlpanel #controlicons .region:before { content: "EU "; }
 body.price-min #controlpanel #controlicons .price:before { content: "Minimum "; }
-body.price-min #controlpanel #controlicons .price { background:url(../images/coins_normal.png) no-repeat; }
+body.price-min #controlpanel #controlicons .price { background-image:url(../images/coins_normal.png); }
 
 /* Propose */
 .propose {
@@ -518,6 +521,12 @@ ul.suggestions li.suggestion.active img.thumbnail { display:block; }
     }
     li.suggestion.active img.thumbnail { display:none; }
   }
+  div.cardlist_container div.sort div {
+    line-height: 2em;
+    height: 2em;
+    padding: 0 0.5em;
+    &.reset { width:2em; }
+  }
   ul.cardlist {
     width:auto;
     li.card {
@@ -527,4 +536,27 @@ ul.suggestions li.suggestion.active img.thumbnail { display:block; }
     }
   }
   .propose { display:none; }
+
+  #controlpanel {
+    height: 4em;
+    #controlicons {
+      border: none;
+      width: 100%;
+      border-radius: 0;
+      @include gradient-v(#464646,#252525);
+      border-top: 2px solid black;
+      span {
+        color: white;
+        padding: 0 1em;
+        background-position: center 8px;
+        height: 4em;
+        line-height: 5.5em;
+        border-left: 1px solid black;
+        margin: 0;
+        min-width: 4em;
+        &:last-child { border-right: 1px solid black; }
+      }
+    }
+  }
+  #popup { bottom: 5em; }
 }

@@ -1,7 +1,7 @@
 <?php
 # add the appropriate values and rename this file to config.php
 
-define("HOSTNAME",    "(mnt.me|tradeassi.st)"); # any other hostname will be treated as a development server
+define("ENV",         ""); # use "development" for local testing
 define("DB_SERVER",   ""); # database hostname
 define("DB_USERNAME", ""); # database username
 define("DB_PASSWORD", ""); # database password

@@ -12,6 +12,10 @@ class TradeAssistCardInterface extends TradeAssistBase
       @counter.addEvent 'propose',(value,factor) =>
         window.clearTimeout(@proposeTimer) if @proposeTimer
         @proposeTimer = window.setTimeout (=> @proposeCard value, factor), 250
+    else
+      # hide controlpanel on suggestion focus
+      @input.on 'focus', => $('#controlpanel').hide()
+      @input.on 'blur', => $('#controlpanel').show()
 
     @cardlist = new TradeAssistCardList sideContainer.find('.cardlist_container'), @tradeAssist
     @cardlist.addEvent 'valuechange', (value) => @counter.add value
@@ -20,7 +24,7 @@ class TradeAssistCardInterface extends TradeAssistBase
     @suggestions.addEvent 'click', (card) =>
       @cardlist.addCard card.clone()
       @suggestions.hide()
-      @input.val('').focus()
+      @input.val('').focus() unless @tradeAssist.isMobile
       @lastSuggest = ''
 
     # Option Binds

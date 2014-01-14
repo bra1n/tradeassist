@@ -7,6 +7,10 @@ class TradeAssistValueCounter extends TradeAssistBase
     @animationDuration = 500 # Millisekunden
     @fontGrowth = 10 # Schriftgroessenwachstum
     @fontSize = 30 # Schriftgroesse
+    @frameRate = (1000/60) # wie oft der Counter pro Sekunde aktualisiert wird
+    if @tradeAssist.isMobile
+      @animationDuration = 200
+      @frameRate = (1000/20)
     @events = {}
 
   # Zählt den Wertcounter um value Einheiten hoch/runter
@@ -23,7 +27,7 @@ class TradeAssistValueCounter extends TradeAssistBase
   incrementCounter: ->
     if Math.abs(@currentValue - parseFloat(@counter.text().replace(/,/, '.'))) > Math.abs(@stepsize)
       @counter.text (parseFloat(@counter.text().replace(/,/, '.')) + @stepsize).toFixed(2).replace(/\./, ',')
-      @interval = window.setTimeout @incrementCounter.bind(@), 17
+      @interval = window.setTimeout @incrementCounter.bind(@), @frameRate
     else
       @counter.text @currentValue.toFixed(2).replace(/\./, ',')
       @interval = 0

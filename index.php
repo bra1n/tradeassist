@@ -5,13 +5,13 @@
       xmlns:fb="http://www.facebook.com/2008/fbml">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-  <meta name="viewport" content="width=device-width" />
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
   <title>Magic Trade Assist</title>
   <script src="/scripts/jquery.js" type="text/javascript"></script>
   <script src="/scripts/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
 <?php
   require "config.php";
-  if(isset($_SERVER['HTTP_HOST']) AND preg_match('/'.HOSTNAME.'$/i',$_SERVER['HTTP_HOST'])) {
+  if(ENV != "development") {
 ?>
   <script src="/scripts/tradeassist.js" type="text/javascript"></script>
   <link rel="stylesheet" type="text/css" href="/styles/tradeassist.css"/>
@@ -60,9 +60,9 @@
 </div>
 <div id="controlpanel">
   <div id="controlicons">
-    <span class="save">Save</span>
-    <span class="price">Prices</span>
-<!--    <span class="region">Region</span>-->
+    <span class="save">Save</span><!--
+    --><span class="price">Prices</span><!--
+    --><span class="region">Region</span>
   </div>
 </div>
 </body>

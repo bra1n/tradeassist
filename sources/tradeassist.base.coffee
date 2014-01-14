@@ -25,9 +25,7 @@ class TradeAssistBase
     @
   # Triggert alle für ein Event registrierten Functions
   fireEvent: (type, args) ->
-    if @events[type]?
-      # todo replace each with native iterators
-      $.each @events[type], (key,fn) => fn.apply(@, args)
+    fn.apply(@, args) for fn in @events[type] if @events[type]?
     @
 
 
@@ -56,6 +54,7 @@ class TradeAssist extends TradeAssistBase
       $(@).closest('.inactive').removeClass('inactive').siblings('div').addClass('inactive')
     # hide popups on click
     @popup = $('#popup').on('click','.window', -> $(@).stop().fadeOut -> $(@).remove()).find '.window'
+    # isMobile means, the mobile styles are used
     @isMobile = $('#left').css('display') is 'block'
 
   # registers a cardInterface to the base class

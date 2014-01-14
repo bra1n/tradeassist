@@ -69,7 +69,7 @@ function updateCardByIDFromUS($id) {
       mysql_query($sql);
     }
 	} else {
-		$card->error = "The card (".$card->name.") is not supported in this region.";
+		$card->error = "The card ".$card->name." from ".$card->edition." is not supported in this region.";
 	}
 	return $card;
 }

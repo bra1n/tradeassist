@@ -62,7 +62,7 @@ class TradeAssistSuggestions extends TradeAssistBase
       # scroll down if the suggestions would be outside of the current window
       w = $(window)
       if w.height() + w.scrollTop() < @container.offset().top + @container.outerHeight()
-        $('html').animate({scrollTop: @container.offset().top + @container.outerHeight() - w.height()})
+        $('body').animate({scrollTop: @inputElement.offset().top })
 
   # Entfernt die Suggestions aus dem DOM-Tree
   hide: -> @inputElement.parent('.input').next('.suggestions').detach() if @isUp()
