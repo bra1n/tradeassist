@@ -75,5 +75,5 @@ Run `coffee -m -b -c -w sources` in the project root folder.
 To update the static CSS / JS assets, simply run `./deploy.sh`, which will generate the tradeassist.js and tradeassist.css
 
 ## License
-Copyright (c) 2013 Steffen Baumgart
+Copyright (c) 2013 Steffen Baumgart<br>
 See the [LICENSE](https://github.com/bra1n/tradeassist/blob/master/LICENSE) file for details.
