@@ -40,8 +40,7 @@ class TradeAssist extends TradeAssistBase
   # bind control icons and popup events
   constructor: ->
     @region = "eu"
-    # todo: uncomment to enable region preselection
-    # @region = "us" if (navigator.language or navigator.userLanguage or "").match(RegExp('^en-us','i'))?
+    @region = "us" if (navigator.language or navigator.userLanguage or "").match(RegExp('^en-us','i'))?
     $('body').addClass 'region-'+@region
     @loadLists window.location.hash.substr(1) if window.location.hash isnt ""
     # bind hooks
@@ -63,9 +62,8 @@ class TradeAssist extends TradeAssistBase
 
   # stores the cardlists in the database
   saveLists: ->
-    listExport = [];
-    $.each @cardInterfaces, (index,element) ->
-      listExport[index] = element.cardlist.exportToObject()
+    listExport = []
+    listExport[index] = elem.cardlist.exportToObject() for elem, index in @cardInterfaces
     unless @requestRunning
       @requestRunning = true
       $.post @url, {action:'export',arg:JSON.stringify(listExport)}, (response) =>
@@ -89,7 +87,7 @@ class TradeAssist extends TradeAssistBase
   togglePrices: ->
     @isMinimum = !@isMinimum
     $('body').toggleClass 'price-min', @isMinimum
-    $.each @cardInterfaces, (index,element) -> element.cardlist.updatePrices()
+    element.cardlist.updatePrices() for element in @cardInterfaces
     @showPopup "Switched Prices", "The cards are now compared by <em>#{if @isMinimum then "minimum" else "average"} prices</em>"
 
   # switch between EU and US region
@@ -97,7 +95,7 @@ class TradeAssist extends TradeAssistBase
     $('body').removeClass 'region-'+@region
     @region = if @region is "us" then "eu" else "us"
     $('body').addClass 'region-'+@region
-    $.each @cardInterfaces, (index,element) -> element.cardlist.reset()
+    element.cardlist.reset() for element in @cardInterfaces
     @showPopup "Switched Region", "Changed the price region to <em>#{@region.toUpperCase()}</em>"
 
   # shows a popup with title and text body

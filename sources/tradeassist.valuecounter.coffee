@@ -39,15 +39,15 @@ class TradeAssistValueCounter extends TradeAssistBase
   rebalance: ->
     min = null
     max = null
-    $.each @tradeAssist.cardInterfaces, (index,element) =>
-      counter = element.counter
+    for cardInterface in @tradeAssist.cardInterfaces
+      counter = cardInterface.counter
       max = counter.currentValue unless max?
       min = counter.currentValue unless min?
       min = counter.currentValue if counter.currentValue < min
       max = counter.currentValue if counter.currentValue > max
     if min is 0 then factor = 1 else factor = Math.abs(Math.min((max/min)-1,1))
-    $.each @tradeAssist.cardInterfaces, (index,element) =>
-      counter = element.counter
+    for cardInterface in @tradeAssist.cardInterfaces
+      counter = cardInterface.counter
       if counter.currentValue > (max+min)/2
         counter.counter.stop().animate
           color: 'rgb('+(255-Math.round(factor*255*(2*counter.currentValue-max-min)/(max-min)))+','+255+','+(255-Math.round(factor*255*(2*counter.currentValue-max-min)/(max-min)))+')'
@@ -60,13 +60,13 @@ class TradeAssistValueCounter extends TradeAssistBase
         counter.counter.stop().animate
           color: 'rgb(255,255,255)'
           fontSize: @fontSize
-      counter.fireEvent "propose", [max-min,factor]
+      counter.fireEvent "difference", [max-min,min/(max+min)]
 
   # TRUE wenn der aktuelle Counter den höchsten Wert hat
   isMax: ->
     max = null
-    $.each @tradeAssist.cardInterfaces, (index, element) =>
-      counter = element.counter
+    for cardInterface in @tradeAssist.cardInterfaces
+      counter = cardInterface.counter
       max = counter.currentValue unless max?
       max = counter.currentValue if counter.currentValue > max
     @currentValue == max

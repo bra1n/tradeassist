@@ -23,7 +23,7 @@ class TradeAssistSuggestions extends TradeAssistBase
   show: (cards) ->
     if cards
       @container.empty()
-      $.each cards, (index, card) =>
+      for card, index in cards
         line = $('<li class="suggestion'+(if index then '' else ' active')+'"></li>').data('card',card)
         realname = ""
         displayname = ""

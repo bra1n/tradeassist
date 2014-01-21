@@ -56,11 +56,11 @@ class TradeAssistCardList extends TradeAssistBase
   # Leert die Kartenliste
   reset: ->
     totalValue = 0
-    $.each @cards, ->
-      card = $(@).data 'card'
+    for cardElement in @cards
+      card = cardElement.data 'card'
       card.removeEvents 'valuechange'
       totalValue -= Math.max(0,card.getRate()) * card.getCount()
-      $(@).slideUp 200, -> $(@).remove()
+      cardElement.slideUp 200, -> $(@).remove()
     @fireEvent "valuechange", [totalValue]
     @cards = []
     @updateCounter()
@@ -68,7 +68,7 @@ class TradeAssistCardList extends TradeAssistBase
   # Aktualisiert den Counter am oberen Rand der Kartenliste und blendet die Sortier-Header aus/ein
   updateCounter: ->
     counter = 0
-    $.each @cards, (index,card) -> counter += card.data('card').getCount()
+    counter += card.data('card').getCount() for card in @cards
     @sortElements.find('.cards').html "<strong>"+counter+"</strong> card"+(if counter is 1 then "" else "s")
     @sortElements.slideDown() if counter
     @sortElements.slideUp() unless counter
@@ -77,7 +77,7 @@ class TradeAssistCardList extends TradeAssistBase
   # Gibt die Kartenliste als Objekt zurück
   exportToObject: ->
   	listExport = {cards:[]}
-  	$.each @cards, (index,card) ->
+  	for card in @cards
   		listExport.cards.push
   			id:   card.data('card').getId()
   			count:card.data('card').getCount()
@@ -87,12 +87,11 @@ class TradeAssistCardList extends TradeAssistBase
   # Erzeugt aus einem Objekt eine Kartenliste
   importFromObject: (list) ->
     if list.cards
-      $.each list.cards, (index,card) => @addCard new TradeAssistCard(card, @tradeAssist)
+      @addCard new TradeAssistCard(card, @tradeAssist) for card in list.cards
       @sort @sortElements.find('.active').text(),@sortElements.find('.active').hasClass('down')
 
   # Setzt bei allen Karten den Minimum/Durchschnittspreis-Modus
-  updatePrices: ->
-    $.each @cards,(index,card) -> card.data('card').updateRate()
+  updatePrices: -> card.data('card').updateRate() for card in @cards
 
   # Generiert ein Karten-Template
   generateCardTemplate: (card) ->
@@ -100,14 +99,14 @@ class TradeAssistCardList extends TradeAssistBase
     self = @
     cardContainer  = $ '<li class="card"></li>'
     rightContainer = $ '<div class="right"></div>'
-    rightContainer.append('<span class="count">'+card.getCount()+'x</span><span class="rate'+(if card.getIsFoil() then ' foil' else'')+'"></span>')
+    rightContainer.append('<span class="count">'+card.getCount()+'x</span><span class="rate currency'+(if card.getIsFoil() then ' foil' else'')+'"></span>')
     rightContainer.append($('<button class="plus">+</button>').on 'click', -> card.setCount(card.getCount()+1))
     rightContainer.append('<img class="rarity '+card.getRarity()+'" src="'+@defaultImg+'" alt=""/><br/>')
     rightContainer.append($('<img class="edition" alt="'+card.getEdition(true)+'" title="'+card.getEdition(false)+'" src="'+card.getEditionImage()+'"/>').on 'click', ->
       #// ---- EDITIONS WÄHLER ---- //
       if card.getEditions().length > 1
         editionPicker = $ '<div class="editions"></div>'
-        $.each card.getEditions(), (index,edition) ->
+        for edition in card.getEditions()
           editionPicker.prepend($('<img class="edition choice"/>').attr(
             alt:  edition.short
             src:  edition.src
@@ -151,8 +150,10 @@ class TradeAssistCardList extends TradeAssistBase
   # Handhabt die Wertveränderung einer Karte
   handleValueChange: (cardContainer,value) ->
     card = cardContainer.data('card')
-    unless card.getCount() > 0
-      $.each @cards,(index,c) => @cards.splice(index,1) if c is cardContainer
+    if card.getCount() is 0
+      # Karte rauswerfen
+      for thatCard, index in @cards when thatCard is cardContainer
+        @cards.splice index, 1
       cardContainer.slideUp 500, -> $(@).remove()
     else
       # Wert

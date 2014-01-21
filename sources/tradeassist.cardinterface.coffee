@@ -1,23 +1,22 @@
 class TradeAssistCardInterface extends TradeAssistBase
   # Konstruktor für die Karteninterface-Klasse
   constructor: (sideContainer, @tradeAssist) ->
-    sideContainer = $(sideContainer)
+    @sideContainer = $(sideContainer)
     # Internal Vars
-    @input = sideContainer.find('.input_cardname')
-    @propose = sideContainer.find('.propose')
+    @input = @sideContainer.find('.input_cardname')
+    @difference = @sideContainer.find('.difference')
     @lastSuggest = ""
 
-    @counter = new TradeAssistValueCounter sideContainer.find('.currentvalue'), @tradeAssist
-    unless @tradeAssist.isMobile
-      @counter.addEvent 'propose',(value,factor) =>
-        window.clearTimeout(@proposeTimer) if @proposeTimer
-        @proposeTimer = window.setTimeout (=> @proposeCard value, factor), 250
-    else
+    @counter = new TradeAssistValueCounter @sideContainer.find('.currentvalue'), @tradeAssist
+    @counter.addEvent 'difference',(value,factor) =>
+      window.clearTimeout(@differenceTimer) if @differenceTimer
+      @differenceTimer = window.setTimeout (=> @updateDifference value, factor), 250
+    if @tradeAssist.isMobile
       # hide controlpanel on suggestion focus
       @input.on 'focus', => $('#controlpanel').hide()
       @input.on 'blur', => $('#controlpanel').show()
 
-    @cardlist = new TradeAssistCardList sideContainer.find('.cardlist_container'), @tradeAssist
+    @cardlist = new TradeAssistCardList @sideContainer.find('.cardlist_container'), @tradeAssist
     @cardlist.addEvent 'valuechange', (value) => @counter.add value
 
     @suggestions = new TradeAssistSuggestions @input, @tradeAssist
@@ -57,14 +56,16 @@ class TradeAssistCardInterface extends TradeAssistBase
         , 250
 
   # Schlägt eine Karte mit dem Wert value vor, wenn der factor (Anteil von value am Gesamt-Tauschwert) über 0.05 liegt
-  proposeCard: (value,factor) ->
-    if factor>0.05 and !@counter.isMax() and value > 0
+  updateDifference: (value,factor) ->
+    if Math.abs(0.5-factor)>0.05 and !@counter.isMax() and value > 0
       # there's at least 5% difference
       excludedIds = []
-      $.each @tradeAssist.cardInterfaces, (index,side) =>
-        if side.counter.isMax()
-          $.each side.cardlist.exportToObject().cards, (index,card) => excludedIds.push(card.id)
-
+      for side in @tradeAssist.cardInterfaces when side.counter.isMax()
+        excludedIds.push card.id for card in side.cardlist.exportToObject().cards
+      @difference.addClass('show').find('span').text value.toFixed(2).replace(/\./,',')
+      @difference.find('.slider').css 'width', 100-(factor*100)+"%"
+      propose = @difference.find('.propose').off 'click'
+      # let's see if we have a card with that value
       @xhr.abort() if @xhr? and @xhr.readyState != 4
       @xhr = $.getJSON @url,
         action: 'propose'
@@ -76,30 +77,17 @@ class TradeAssistCardInterface extends TradeAssistBase
         if response
           # we have a proposed card
           card = new TradeAssistCard response, @tradeAssist
-          @propose.off('click').empty()
-          # thumbnail handling
-          @propose.append $('<img class="thumbnail" src="'+card.getImage()+'" alt="" title="'+card.getName()+'"/>').on
-            mouseenter: ->
-              el = $(@)
-              return if !el.closest('.propose').hasClass('show')
-              $('#fullcard').stop().remove()
-              el.clone().attr('id','fullcard').css(el.offset()).css
-                left: el.offset().left - 245
-                top: el.offset().top - 20
-                display: 'none'
-              .appendTo('body').fadeIn()
-            mouseleave: -> $('#fullcard').stop().fadeOut 500, -> $(@).remove()
-          @propose.append "<img class='rarity #{card.getRarity()}' src='"+@defaultImg+"' alt=''/>"
-          @propose.append "<img class='edition' src='"+card.getEditionImage()+"' alt='#{card.getEdition(true)}' title='#{card.getEdition(false)}'/>"
-          @propose.append "<div class='name'>#{card.getName('en')}</div>"
-          @propose.on 'click',=>
+          propose.find('a').text card.getName() + " ("+card.getEdition(yes)+")"
+          propose.on 'click','a', =>
+            if @tradeAssist.isMobile # show the list that we add the card to
+              @sideContainer.removeClass('inactive').siblings('div').addClass('inactive')
             @cardlist.addCard card
-            @propose.off('click').removeClass 'show'
-          @propose.addClass 'show'
+            propose.off('click')
+            false
+          propose.show()
         else
-          # no card proposed :(
-          @propose.off('click').removeClass 'show'
+          propose.hide()
     else
-      # less than 5% difference
+      # less than 5% difference or non-max counter
       @xhr?.abort()
-      @propose.off('click').removeClass 'show'
+      @difference.removeClass('show').find('.propose').off 'click'

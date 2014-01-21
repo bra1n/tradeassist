@@ -2,7 +2,7 @@ class TradeAssistCard extends TradeAssistBase
   # Konstruktor für die Erzeugung von Card-Objekten aus JSON-Objekten
   constructor: (objects, @tradeAssist) ->
     if $.isArray(objects)
-      $.each objects, (index,object) => objects[index] = new TradeAssistCard(object, @tradeAssist)
+      objects[index] = new TradeAssistCard(object, @tradeAssist) for object, index in objects
       return objects
     else
       @name =
@@ -76,11 +76,11 @@ class TradeAssistCard extends TradeAssistBase
   # Gibt alle Editionen einer Karte zurück.
   getEditions: ->
     editions = []
-    $.each @printings, (index,edition) =>
+    for printing in @printings
       editions.push
-        short: edition["ed"]
-        long:  edition["edition"]
-        src:   @getEditionImage edition["ed"]
+        short: printing["ed"]
+        long:  printing["edition"]
+        src:   @getEditionImage printing["ed"]
     editions
 
   # Ändert die Edition der Karte, entweder um eine Edition nach links/rechts, oder auf die übergebene Edition
@@ -95,10 +95,8 @@ class TradeAssistCard extends TradeAssistBase
       else
         @printings.push @printings.shift()
     else # die übergebene Edition suchen und auswählen
-      $.each @printings, (index,printing) =>
-        if printing["ed"] is edition
-          @printings.unshift @printings.splice(index,1)[0]
-          false
+      for printing, index in @printings when printing["ed"] is edition
+        @printings.unshift @printings.splice(index,1)[0]
     if @printings[0].rates? # neue Edition hat schon Werte
       @rates = @printings[0].rates
       @isFoil = no if @rates.special is "nofoil"

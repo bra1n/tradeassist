@@ -35,16 +35,26 @@
 <body>
 <div id="container">
   <div id="left">
-    <div class="counter"><span class="currentvalue">0,00</span></div>
-    <div class="propose"></div>
+    <div class="counter"><span class="currentvalue currency">0,00</span></div>
+    <div class="difference">
+      Difference: <span class="currency"></span>
+      <div class="propose">or <a></a></div>
+      <div class="sliderback"></div>
+      <div class="slider"></div>
+    </div>
     <div class="cardlist_container"></div>
     <div class="input">
       <input type="text" name="cardname" tabindex="1" autocomplete="off" class="input_cardname" placeholder="enter cardname"/>
     </div>
   </div>
   <div id="right" class="inactive">
-    <div class="propose"></div>
-    <div class="counter"><span class="currentvalue">0,00</span></div>
+    <div class="difference">
+      Difference: <span class="currency"></span>
+      <div class="propose">or <a></a></div>
+      <div class="sliderback"></div>
+      <div class="slider"></div>
+    </div>
+    <div class="counter"><span class="currentvalue currency">0,00</span></div>
     <div class="cardlist_container"></div>
     <div class="input">
       <input type="text" name="cardname" tabindex="2" autocomplete="off" class="input_cardname" placeholder="enter cardname"/>
@@ -53,7 +63,7 @@
 </div>
 <div id="footer">
   <a href="http://tradeassi.st"><img src="/images/logo.png" alt="MagicTradeAssist"/></a><br/>
-  MagicTradeAssist v2.1 &mdash; steffen[at]mnt[dot]me
+  MagicTradeAssist v2.2 &mdash; <a href="https://github.com/bra1n/tradeassist/issues">Report an issue</a>
 </div>
 <div id="popup">
   <div class="window"><h1></h1><p></p></div>
