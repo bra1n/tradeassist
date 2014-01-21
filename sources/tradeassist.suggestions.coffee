@@ -50,12 +50,13 @@ class TradeAssistSuggestions extends TradeAssistBase
           line.prepend $('<div class="arrow right">&rarr;</div>').on 'click',(e) =>
             e.stopPropagation()
             @right(line)
-        line.on
-          click: => @fireEvent 'click', [card]
-          mouseenter: =>
-            if !line.is('.active')
-              $('li.active',@container).removeClass('active')
-              line.addClass('active')
+        do (line, card) =>
+          line.on
+            click: => @fireEvent 'click', [card]
+            mouseenter: =>
+              if !line.is('.active')
+                $('li.active',@container).removeClass('active')
+                line.addClass('active')
         @container.append line
     if !@isUp() and $('li.suggestion',@container).length
       @inputElement.parent('.input').after @container
