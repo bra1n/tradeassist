@@ -121,7 +121,7 @@ class TradeAssistCard extends TradeAssistBase
             @rates.foil = parseFloat response["rate_foil"]
             @rates.min = parseFloat response["minprice"]
             @rates.min_foil = parseFloat(response["minprice_foil"])
-            @rates.d = response["timestamp"]
+            @rates.date = response["timestamp"]
             if @rates.foil > 0 and @rates.normal is 0
               @rates.special = "onlyfoil"
               @isFoil = true
