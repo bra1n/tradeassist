@@ -59,7 +59,28 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 					if($card->error) {
 						echo '{"error":"'.$card->error.'"}';
 					} else {
-						echo json_encode($card);
+            // transform card object into expected response
+            switch($region){
+              case "us":
+                $response = array(
+                  "rate"=>$card->rate_us,
+                  "rate_foil"=>$card->rate_foil_us,
+                  "minprice"=>$card->minprice_us,
+                  "minprice_foil"=>$card->rate_foil_us,
+                  "timestamp"=>$card->timestamp_us
+                );
+                break;
+              case "eu":
+              default:
+              $response = array(
+                "rate"=>$card->rate,
+                "rate_foil"=>$card->rate_foil,
+                "minprice"=>$card->minprice,
+                "minprice_foil"=>$card->minprice_foil,
+                "timestamp"=>$card->timestamp_mkm
+              );
+            }
+						echo json_encode($response);
 					}
 				} else {
 					echo json_encode($row);

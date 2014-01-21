@@ -18,6 +18,7 @@ class TradeAssistCard extends TradeAssistBase
         special:  ""
       @count = objects.count or 1
       @isFoil = objects.foil or false
+      @isMinimum = @tradeAssist.isMinimum
       @events = {}
       return @
 
@@ -51,8 +52,10 @@ class TradeAssistCard extends TradeAssistBase
       @fireEvent "valuechange", [@getCount()*(@getRate()-oldRate)] if oldRate >= 0 and @getRate() >= 0
 
   updateRate: ->
-    oldRate = @getRate()
-    @fireEvent "valuechange", [@getCount()*(@getRate()-oldRate)] if oldRate >= 0 and @getRate() >= 0
+    if @isMinimum isnt @tradeAssist.isMinimum
+      oldRate = @getRate()
+      @isMinimum = @tradeAssist.isMinimum
+      @fireEvent "valuechange", [@getCount()*(@getRate()-oldRate)] if oldRate >= 0 and @getRate() >= 0
 
   getSpecial: -> @rates.special
 
@@ -118,7 +121,7 @@ class TradeAssistCard extends TradeAssistBase
             @rates.foil = parseFloat response["rate_foil"]
             @rates.min = parseFloat response["minprice"]
             @rates.min_foil = parseFloat(response["minprice_foil"])
-            @rates.date = response["timestamp"]
+            @rates.d = response["timestamp"]
             if @rates.foil > 0 and @rates.normal is 0
               @rates.special = "onlyfoil"
               @isFoil = true
@@ -138,9 +141,9 @@ class TradeAssistCard extends TradeAssistBase
             @fireEvent "valuechange", [0]
       return -1
     else if @getIsFoil()
-      return if @tradeAssist.isMinimum then @rates.min_foil else @rates.foil
+      return if @isMinimum then @rates.min_foil else @rates.foil
     else
-      return if @tradeAssist.isMinimum then @rates.min else @rates.normal
+      return if @isMinimum then @rates.min else @rates.normal
 
   # Gibt das Datum der letzten Wertermittlung zurück
   getRateTimestamp: -> @rates.date or null
@@ -151,6 +154,6 @@ class TradeAssistCard extends TradeAssistBase
   # Erzeugt eine Kopie der Karte und gibt sie zurück
   clone: ->
     clone = new TradeAssistCard {}, @tradeAssist
-    cloneFields = ["name","printings","rates","count","isFoil"]
+    cloneFields = ["name","printings","rates","count","isFoil","isMinimum"]
     clone[field] = @[field] for field in cloneFields
     clone
