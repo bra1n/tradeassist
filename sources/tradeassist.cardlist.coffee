@@ -107,21 +107,22 @@ class TradeAssistCardList extends TradeAssistBase
       if card.getEditions().length > 1
         editionPicker = $ '<div class="editions"></div>'
         for edition in card.getEditions()
-          editionPicker.prepend($('<img class="edition choice"/>').attr(
-            alt:  edition.short
-            src:  edition.src
-            title:edition.long
-          ).on 'click', ->
-            editionPicker.remove()
-            card.setEdition edition.short
-            rightContainer.find('.edition').attr(
-              alt:  card.getEdition(true)
-              title:card.getEdition(false)
-              src:  card.getEditionImage()
-            ).show()
-            rightContainer.find('.rarity').attr('class','rarity '+card.getRarity())
-            cardContainer.find('.thumbnail').attr('src',card.getImage()).parent('a').attr('href',card.getMKMLink())
-          )
+          do (edition) ->
+            editionPicker.prepend($('<img class="edition choice"/>').attr(
+              alt:  edition.short
+              src:  edition.src
+              title:edition.long
+            ).on 'click', ->
+              editionPicker.remove()
+              card.setEdition edition.short
+              rightContainer.find('.edition').attr(
+                alt:  card.getEdition(true)
+                title:card.getEdition(false)
+                src:  card.getEditionImage()
+              ).show()
+              rightContainer.find('.rarity').attr('class','rarity '+card.getRarity())
+              cardContainer.find('.thumbnail').attr('src',card.getImage()).parent('a').attr('href',card.getMKMLink())
+            )
         $(@).hide().after(editionPicker)
     .toggleClass 'multiple', (card.getEditions().length > 1))
     rightContainer.append $('<div class="checkbox foil" title="Normal / Foil"></div>').toggleClass('checked',card.getIsFoil()).on 'click', ->

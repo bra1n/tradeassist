@@ -44,12 +44,13 @@ class TradeAssistSuggestions extends TradeAssistBase
           title: card.getEdition()
           alt: card.getEdition(yes)
         if card.getEditions().length > 1
-          line.prepend $('<div class="arrow left">&larr;</div>').on 'click',(e) =>
-            e.stopPropagation()
-            @left(line)
-          line.prepend $('<div class="arrow right">&rarr;</div>').on 'click',(e) =>
-            e.stopPropagation()
-            @right(line)
+          do(line) =>
+            line.prepend $('<div class="arrow left">&larr;</div>').on 'click',(e) =>
+              e.stopPropagation()
+              @left(line)
+            line.prepend $('<div class="arrow right">&rarr;</div>').on 'click',(e) =>
+              e.stopPropagation()
+              @right(line)
         do (line, card) =>
           line.on
             click: => @fireEvent 'click', [card]

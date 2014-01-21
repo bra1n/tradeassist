@@ -59,6 +59,7 @@ function updateCardByIDFromUS($id) {
       $card->rate_us = floatval($xml->product->avgprice);
       $card->minprice_us = floatval($xml->product->lowprice);
       $card->rate_foil_us = floatval($xml->product->foilavgprice);
+      $card->timestamp_us = date("Y-m-d H:i:s");
       // insert all the new prices into the DB
       $sql = "UPDATE cards SET ".
         "rate_us = '".$card->rate_us."', ".
@@ -169,7 +170,7 @@ function updatePricesByIdFromMKM($id) {
     }
   }
 
-  $card->timestamp = date("Y-m-d H:i:s");
+  $card->timestamp_mkm = date("Y-m-d H:i:s");
 
   $sql = "UPDATE IGNORE cards SET ".
     "rate='".$card->rate."', ".
@@ -201,7 +202,7 @@ function getCardByIdFromMKM($id) {
     $xml = simplexml_load_string($xml);
     if(isset($xml->product) AND intval($xml->product->category->idCategory) == 1) {
       $card->name = str_replace("Æ","AE",$xml->product->name[0]->productName);
-      $card->name_de =  str_replace("Æ","AE",$xml->product->name[2]->productName);
+      $card->name_de = str_replace("Æ","AE",$xml->product->name[2]->productName);
       $card->rarity = strtolower(substr($xml->product->rarity,0,1));
       $card->edition = strval($xml->product->expansion);
       $card->img_url = str_replace("./img/cards/","",$xml->product->image);
