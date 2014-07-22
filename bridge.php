@@ -54,7 +54,7 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 			$row = mysql_fetch_array($result,MYSQL_ASSOC);
 			mysql_free_result($result);
 			if($row) {
-				if(time() - strtotime($row['timestamp']) > 3600*24*7) {
+				if(time() - strtotime($row['timestamp']) > 3600*24) {
 					$card = updateCardById(intval($arg),$region);
 					if($card->error) {
 						echo '{"error":"'.$card->error.'"}';
