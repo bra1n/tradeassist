@@ -197,7 +197,7 @@ function getCardByIdFromMKM($id) {
   $card->error = "";
   $card->id = $id;
   $xml = queryMKMAPI("product/$id");
-  if(!$xml) $card->error = "error loading card";
+  if($xml->error) $card->error = $xml->error;
   else {
     if(isset($xml->product) AND intval($xml->product->category->idCategory) == 1) {
       $card->name = str_replace("Æ","AE",$xml->product->name[0]->productName);
@@ -279,39 +279,42 @@ function getOffersByIdFromMKM($id) {
 	$id = intval($id);
 
   $xml = queryMKMAPI("articles/$id");
-  foreach($xml->article as $offer) {
-    $isAltered = $offer->isAltered == "true" ? 1:0;
-    $isFoil = $offer->isFoil == "true" ? 1:0;
-    $isPlayset = $offer->isPlayset == "true" ? 1:0;
-    $price = floatval($offer->price);
-    $count = intval($offer->count);
-    $condition = array_search($offer->condition, $gradings);
-    $language = intval($offer->language->idLanguage);
-    $country = strval($offer->seller->country);
-    $seller = strval($offer->seller->username);
-    $level = intval($offer->seller->reputation); # 0 = best, 4+ = worst
-    $warning = intval($offer->seller->riskGroup); # 0 = no warning, 1 = new seller, 2 = big warning
-    $rating = intval($offer->seller->reputation);
-    $speed = intval($offer->seller->shipsFast); # todo replace with real value once available
-    if($isPlayset) {
-      $count = $count * 4;
-      $price = $price / 4;
+  if($xml->error) print_r($xml->error);
+  else {
+    foreach($xml->article as $offer) {
+      $isAltered = $offer->isAltered == "true" ? 1:0;
+      $isFoil = $offer->isFoil == "true" ? 1:0;
+      $isPlayset = $offer->isPlayset == "true" ? 1:0;
+      $price = floatval($offer->price);
+      $count = intval($offer->count);
+      $condition = array_search($offer->condition, $gradings);
+      $language = intval($offer->language->idLanguage);
+      $country = strval($offer->seller->country);
+      $seller = strval($offer->seller->username);
+      $level = intval($offer->seller->reputation); # 0 = best, 4+ = worst
+      $warning = intval($offer->seller->riskGroup); # 0 = no warning, 1 = new seller, 2 = big warning
+      $rating = intval($offer->seller->reputation);
+      $speed = intval($offer->seller->shipsFast); # todo replace with real value once available
+      if($isPlayset) {
+        $count = $count * 4;
+        $price = $price / 4;
+      }
+      $offers[] = array(
+        "altered" => $isAltered,
+        "foil"    => $isFoil,
+        "playset" => $isPlayset,
+        "price"     => $price,
+        "amount"     => $count,
+        "grading" => $condition,
+        "country"   => $country,
+        "seller"   => $seller,
+        "rating" => $rating,
+        "speed" => $speed,
+        "level" => $level,
+        "language" => $language,
+        "warning" => $warning
+      );
     }
-    $offers[] = array(
-      "altered" => $isAltered,
-      "foil"    => $isFoil,
-      "playset" => $isPlayset,
-      "price"     => $price,
-      "amount"     => $count,
-      "grading" => $condition,
-      "country"   => $country,
-      "seller"   => $seller,
-      "rating" => $rating,
-      "speed" => $speed,
-      "level" => $level,
-      "language" => $language,
-      "warning" => $warning
-    );
   }
 	return $offers;
 }
