@@ -15,7 +15,7 @@
 ?>
   <script src="/scripts/tradeassist.js" type="text/javascript"></script>
   <link rel="stylesheet" type="text/css" href="/styles/tradeassist.css"/>
-<? } else { ?>
+<?php } else { ?>
   <link rel="stylesheet" type="text/css" href="/sources/tradeassist.css"/>
   <script src="/sources/tradeassist.base.js" type="text/javascript"></script>
   <script src="/sources/tradeassist.cardinterface.js" type="text/javascript"></script>
@@ -23,7 +23,7 @@
   <script src="/sources/tradeassist.suggestions.js" type="text/javascript"></script>
   <script src="/sources/tradeassist.valuecounter.js" type="text/javascript"></script>
   <script src="/sources/tradeassist.card.js" type="text/javascript"></script>
-<? } ?>
+<?php } ?>
   <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"/>
   <!-- Facebook Meta Data -->
   <meta property="og:image" content="http://tradeassi.st/images/favicon.png"/>

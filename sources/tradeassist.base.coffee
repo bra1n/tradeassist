@@ -8,7 +8,7 @@ class TradeAssistBase
   defaultImg:       'images/spacer.gif'
   regularImageUrl:  'http://gatherer.wizards.com/Handlers/Image.ashx?'
   #customImageUrl:  'http://magickartenmarkt.de/img/cards/'
-  customImageUrl:   'http://tcgimages.eu/img/cards/'
+  customImageUrl:   'http://www.mkmapi.eu/img/cards/'
   url:              'bridge.php'
   events:           {}
   test:             ''
