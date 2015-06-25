@@ -197,7 +197,8 @@ function getCardByIdFromMKM($id) {
   $card->error = "";
   $card->id = $id;
   $xml = queryMKMAPI("product/$id");
-  if($xml->error) $card->error = $xml->error;
+  if(!$xml) $card->error = "no data from server";
+  elseif($xml->error) $card->error = $xml->error;
   else {
     if(isset($xml->product) AND intval($xml->product->category->idCategory) == 1) {
       $card->name = str_replace("Æ","AE",$xml->product->name[0]->productName);
