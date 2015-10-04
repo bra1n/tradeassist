@@ -1,6 +1,6 @@
 <?php
 //error_reporting(E_ALL);
-include "functions.php";
+require "functions.php";
 
 if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
   $region = "eu";
@@ -14,27 +14,27 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 			if(preg_match("~.+ foil$~i",$arg)) {
 				// Foilkarten
 				$arg = substr($arg,0,-5);
-				$result = mysql_query("SELECT GROUP_CONCAT(id ORDER BY edition DESC) AS ids FROM cards ".
-					"WHERE (LOWER(name) LIKE '%".mysql_real_escape_string($arg)."%' ".
-					"OR LOWER(name_de) LIKE '%".mysql_real_escape_string($arg)."%') ".
+				$result = $db->query("SELECT GROUP_CONCAT(id ORDER BY edition DESC) AS ids FROM cards ".
+					"WHERE (LOWER(name) LIKE '%".$db->real_escape_string($arg)."%' ".
+					"OR LOWER(name_de) LIKE '%".$db->real_escape_string($arg)."%') ".
 					"AND rate_foil > 0 ".
 					"GROUP BY name ".
-					"ORDER BY IF(LOWER(name) LIKE '%".mysql_real_escape_string($arg)."%',LENGTH(name),LENGTH(name_de)) ASC,name ASC LIMIT 10");
+					"ORDER BY IF(LOWER(name) LIKE '%".$db->real_escape_string($arg)."%',LENGTH(name),LENGTH(name_de)) ASC,name ASC LIMIT 10");
 				echo '"type":"foil",';
 			} else {
 				// normale Karten
-				$result = mysql_query("SELECT GROUP_CONCAT(id ORDER BY edition DESC) AS ids FROM cards ".
-					"WHERE LOWER(name) LIKE '%".mysql_real_escape_string($arg)."%' ".
-					"OR LOWER(name_de) LIKE '%".mysql_real_escape_string($arg)."%' ".
+				$result = $db->query("SELECT GROUP_CONCAT(id ORDER BY edition DESC) AS ids FROM cards ".
+					"WHERE LOWER(name) LIKE '%".$db->real_escape_string($arg)."%' ".
+					"OR LOWER(name_de) LIKE '%".$db->real_escape_string($arg)."%' ".
 					"GROUP BY name ".
-					"ORDER BY IF(LOWER(name) LIKE '%".mysql_real_escape_string($arg)."%',LENGTH(name),LENGTH(name_de)) ASC,name ASC LIMIT 10");
+					"ORDER BY IF(LOWER(name) LIKE '%".$db->real_escape_string($arg)."%',LENGTH(name),LENGTH(name_de)) ASC,name ASC LIMIT 10");
 				echo '"type":"all",';
 			}
 			$cardIds = array();
-			while($row = mysql_fetch_assoc($result)) {
+			while($row = $result->fetch_assoc()) {
 				$cardIds = array_merge($cardIds,explode(",",$row['ids']));
 			}
-			mysql_free_result($result);
+			$result->free();
 			$cards = getCardsByIds($cardIds);
 			echo '"cards":'.json_encode(array_values($cards)).'}';
 		break;
@@ -50,9 +50,9 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
           $fields = "rate,rate_foil,minprice,minprice_foil,timestamp_mkm as timestamp";
       }
 			$sql = "SELECT $fields FROM cards WHERE id='".intval($arg)."'";
-			$result = mysql_query($sql);
-			$row = mysql_fetch_array($result,MYSQL_ASSOC);
-			mysql_free_result($result);
+			$result = $db->query($sql);
+			$row = $result->fetch_assoc();
+			$result->free();
 			if($row) {
 				if(time() - strtotime($row['timestamp']) > 3600*24) {
 					$card = updateCardById(intval($arg),$region);
@@ -108,20 +108,20 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
         default:
           $field = ($minprice ? 'minprice':'rate');
       }
-			$result = mysql_query("SELECT c.id AS id,name,ed.shortname,ed.edition,rarity FROM cards AS c
+			$result = $db->query("SELECT c.id AS id,name,ed.shortname,ed.edition,rarity FROM cards AS c
 				LEFT JOIN editions AS ed ON ed.id = c.edition
 				WHERE isregular = 1
 				AND c.id NOT IN ('".implode("','",$exclude)."')
 				AND ABS(1-$field/'$arg') <= 0.05
 				ORDER BY ABS(1-$field/'$arg') ASC,timestamp_mkm DESC LIMIT 1");
-			$row = mysql_fetch_assoc($result);
+			$row = $result->fetch_assoc();
 			if($row) {
 				$card = new stdClass();
 				$card->name = $row['name'];
 				$card->printings[] = array("ed"=>$row['shortname'],"edition"=>$row['edition'],"img"=>"","rarity"=>$row['rarity'],"id"=>$row['id']);
 			}
 			echo json_encode($card);
-			mysql_free_result($result);
+			$result->free();
 		break;
 	/* Liste exportieren */
 		case 'export':
@@ -136,12 +136,12 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 			}
 			if(count($cardIds)) {
 				$sql = "SELECT id FROM cards WHERE id IN (".implode(",",$cardIds).") ORDER BY id ASC";
-				$result = mysql_query($sql);
+				$result = $db->query($sql);
 				$validIds = array();
-				while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+				while($row = $result->fetch_assoc()) {
 					$validIds[] = $row['id'];
 				}
-				mysql_free_result($result);
+				$result->free();
 				if(count($validIds)) {
 					foreach($lists as $listindex=>$list) {
 						if(property_exists($list,'cards')) {
@@ -151,17 +151,17 @@ if(isset($_REQUEST['arg']) AND isset($_REQUEST['action'])) {
 							sort($list->cards);
 						}
 					}
-					mysql_query("INSERT INTO export (cardlists,md5) VALUES ('".mysql_real_escape_string(json_encode($lists))."','".md5(json_encode($lists))."') ON DUPLICATE KEY UPDATE timestamp = NOW()") or die(mysql_error());
-					echo mysql_insert_id();
+					$db->query("INSERT INTO export (cardlists,md5) VALUES ('".$db->real_escape_string(json_encode($lists))."','".md5(json_encode($lists))."') ON DUPLICATE KEY UPDATE timestamp = NOW()") or die($db->error);
+					echo mysqli_insert_id($db);
 				}
 			}
 		break;
 	/* Liste importieren */
 		case 'import':
-			$result = mysql_query("SELECT cardlists FROM export WHERE id = '".intval($arg)."' LIMIT 1");
-			$row = mysql_fetch_assoc($result);
+			$result = $db->query("SELECT cardlists FROM export WHERE id = '".intval($arg)."' LIMIT 1");
+			$row = $result->fetch_assoc();
 			if($row) {
-				mysql_query("UPDATE export SET timestamp = NOW() WHERE id = '".intval($arg)."' LIMIT 1");
+				$db->query("UPDATE export SET timestamp = NOW() WHERE id = '".intval($arg)."' LIMIT 1");
 				$lists = json_decode($row['cardlists']);
 				$cardIds = array();
 				foreach($lists as $listindex=>$list) {
