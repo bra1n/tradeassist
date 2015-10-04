@@ -1,8 +1,7 @@
 ﻿<?php
 require "config.php";
-mysql_connect(DB_SERVER,DB_USERNAME,DB_PASSWORD) or die("Couldn't connect to online database: ".mysql_error());
-mysql_select_db(DB_DATABASE);
-mysql_set_charset('utf8');
+$db = new mysqli(DB_SERVER,DB_USERNAME,DB_PASSWORD,DB_DATABASE) or die("Couldn't connect to online database: ".$db->error);
+$db->set_charset('utf8');
 date_default_timezone_set("Europe/Berlin");
 
 /**
@@ -28,9 +27,10 @@ function updateCardById($id, $source = "mkm") {
  * @return stdClass
  */
 function updateCardByIDFromUS($id) {
-	$result = mysql_query("SELECT c.*, e.edition, e.us_name AS edition_us, e.isregular FROM cards c LEFT JOIN editions e ON e.id = c.edition WHERE c.id = '".$id."' LIMIT 1") or die(mysql_error());
-	$card = (object) mysql_fetch_assoc($result);
-	mysql_free_result($result);
+  global $db;
+	$result = $db->query("SELECT c.*, e.edition, e.us_name AS edition_us, e.isregular FROM cards c LEFT JOIN editions e ON e.id = c.edition WHERE c.id = '".$id."' LIMIT 1") or die($db->error);
+	$card = (object) $result->fetch_assoc();
+	$result->free();
 	$card->error = "";
 	if(!isset($card->id)) {
 		$card->error = "id $id not found";
@@ -67,7 +67,7 @@ function updateCardByIDFromUS($id) {
         "rate_foil_us = '".$card->rate_foil_us."', ".
         "timestamp_us = NOW() ".
         "WHERE id = '".$card->id."'";
-      mysql_query($sql);
+      $db->query($sql);
     }
 	} else {
 		$card->error = "The card ".$card->name." from ".$card->edition." is not supported in this region.";
@@ -82,6 +82,7 @@ function updateCardByIDFromUS($id) {
  * @return stdClass
  */
 function updatePricesByIdFromMKM($id) {
+  global $db;
 	$id = intval($id);
 	$card = new stdClass();
 	$card->error = "";
@@ -179,8 +180,8 @@ function updatePricesByIdFromMKM($id) {
     "minprice_foil='".$card->minprice_foil."', ".
     "timestamp_mkm=NOW() ".
     "WHERE id = '".$id."'";
-  mysql_query($sql);
-  if(mysql_affected_rows() == 0) {
+  $db->query($sql);
+  if(mysqli_affected_rows($db) == 0) {
 		$card->error = "error updating prices for card ".$id;
 	}
 	return $card;
@@ -192,6 +193,7 @@ function updatePricesByIdFromMKM($id) {
  * @returns stdClass
  */
 function getCardByIdFromMKM($id) {
+  global $db;
   $id = intval($id);
   $card = new stdClass();
   $card->error = "";
@@ -207,20 +209,20 @@ function getCardByIdFromMKM($id) {
       $card->edition = strval($xml->product->expansion);
       $card->img_url = str_replace("./img/cards/","",$xml->product->image);
       // get edition
-      $sql = "SELECT id FROM editions WHERE edition='".mysql_real_escape_string($card->edition)."' OR mkm_name='".mysql_real_escape_string($card->edition)."' LIMIT 1";
-      $result = mysql_query($sql);
-      $row = mysql_fetch_assoc($result);
-      mysql_free_result($result);
+      $sql = "SELECT id FROM editions WHERE edition='".$db->real_escape_string($card->edition)."' OR mkm_name='".$db->real_escape_string($card->edition)."' LIMIT 1";
+      $result = $db->query($sql);
+      $row = $result->fetch_assoc();
+      $result->free();
       if(isset($row['id'])) {
         $sql = "REPLACE INTO cards SET ".
           "id=".$id.", ".
-          "name='".mysql_real_escape_string($card->name)."', ".
-          "name_de='".mysql_real_escape_string($card->name_de)."', ".
-          "img_url='".mysql_real_escape_string($card->img_url)."', ".
+          "name='".$db->real_escape_string($card->name)."', ".
+          "name_de='".$db->real_escape_string($card->name_de)."', ".
+          "img_url='".$db->real_escape_string($card->img_url)."', ".
           "edition=".$row['id'].", ".
           "timestamp_mkm=0, ".
-          "rarity='".mysql_real_escape_string($card->rarity)."'";
-        mysql_query($sql) or die(mysql_error()."\n".$sql."\n");
+          "rarity='".$db->real_escape_string($card->rarity)."'";
+        $db->query($sql) or die($db->error."\n".$sql."\n");
       } else {
         $card->error = "unrecognized edition ".$card->edition." (".$card->name.")";
       }
@@ -240,6 +242,7 @@ function getCardByIdFromMKM($id) {
  * @return mixed
  */
 function getCardsByIds($cardIds, $fillPrintings = false) {
+  global $db;
 	$cards = array();
 	if(!is_array($cardIds)) {
 		$cardIds = array($cardIds);
@@ -249,8 +252,8 @@ function getCardsByIds($cardIds, $fillPrintings = false) {
 			LEFT JOIN editions AS ed ON ed.id = c.edition
 			WHERE c.id IN ('".implode("','",$cardIds)."')
 			ORDER BY FIND_IN_SET(c.id,'".implode(",",$cardIds)."')";
-	$result = mysql_query($sql) OR die(mysql_error());
-	while($row = mysql_fetch_assoc($result)) {
+	$result = $db->query($sql) OR die($db->error);
+	while($row = $result->fetch_assoc()) {
 		if(!isset($cards[$row['name']])) {
 			$cards[$row['name']] = new stdClass();
 			$cards[$row['name']]->name = $row['name'];
@@ -260,17 +263,17 @@ function getCardsByIds($cardIds, $fillPrintings = false) {
 		if($fillPrintings) {
 			$sql = "SELECT c.id AS id,name,name_de,ed.shortname AS ed,ed.edition,IF(isregular=1,'',img_url) AS img_url,isregular,rarity FROM cards AS c
 					LEFT JOIN editions AS ed ON ed.id = c.edition
-					WHERE name = '".mysql_real_escape_string($row['name'])."'
+					WHERE name = '".$db->real_escape_string($row['name'])."'
 					AND c.id != '".$row['id']."'
 					ORDER BY edition DESC";
-			$subresult = mysql_query($sql) OR die(mysql_error());
-			while($subrow = mysql_fetch_assoc($subresult)) {
+			$subresult = $db->query($sql) OR die($db->error);
+			while($subrow = $subresult->fetch_assoc()) {
 				$cards[$row['name']]->printings[] = array("ed"=>$subrow['ed'],"edition"=>$subrow['edition'],"img"=>$subrow['img_url'],"rarity"=>$subrow['rarity'],"id"=>$subrow['id']);
 			}
-			mysql_free_result($subresult);
+			$subresult->free();
 		}
 	}
-	mysql_free_result($result);
+	$result->free();
 	return $cards;
 }
 
