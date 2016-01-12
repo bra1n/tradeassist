@@ -220,7 +220,7 @@ function getCardByIdFromMKM($id) {
           "name_de='".$db->real_escape_string($card->name_de)."', ".
           "img_url='".$db->real_escape_string($card->img_url)."', ".
           "edition=".$row['id'].", ".
-          "timestamp_mkm=0, ".
+          "timestamp_mkm='1970-02-01 00:00:01', ".
           "rarity='".$db->real_escape_string($card->rarity)."'";
         $db->query($sql) or die($db->error."\n".$sql."\n");
       } else {
